@@ -20,10 +20,9 @@ Options -Indexes
 	RewriteCond %{REQUEST_FILENAME} !-d
 	RewriteRule ^(.*)/$ /$1 [L,R=301]
 
-	# Rewrite "www.example.com -> example.com"
-	RewriteCond %{HTTPS} !=on
-	RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
-	RewriteRule ^ http://%1%{REQUEST_URI} [R=301,L]
+	# (Removido o redirecionamento "www -> sem www": forçava http:// e não se aplica
+	#  a suporte.aescas.net. Em produção ficou um "RewriteCond %{HTTPS} !=on" solto,
+	#  que condicionava a regra do index.php abaixo — não o repor.)
 
 	# Checks to see if the user is attempting to access a valid file,
     # such as an image or css document, if this isn't true it sends the
