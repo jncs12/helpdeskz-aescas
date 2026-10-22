@@ -192,7 +192,7 @@ class Kb extends BaseController
             } else {
                 $kb->addArticle(
                     $this->request->getPost('title'),
-                    $this->request->getPost('content'),
+                    hdz_purify($this->request->getPost('content')),
                     $this->request->getPost('category_id'),
                     $this->request->getPost('public')
                 );
@@ -246,7 +246,7 @@ class Kb extends BaseController
                 $kb->updateArticle(
                     $article->id,
                     $this->request->getPost('title'),
-                    $this->request->getPost('content'),
+                    hdz_purify($this->request->getPost('content')),
                     $this->request->getPost('category_id'),
                     $this->request->getPost('public')
                 );

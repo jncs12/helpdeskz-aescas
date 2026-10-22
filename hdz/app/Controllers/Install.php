@@ -251,7 +251,7 @@ class Install extends BaseController
         $this->current_version = null;
         if(file_exists($lock_file)){
             $content = file_get_contents($lock_file);
-            $content = unserialize($content);
+            $content = hdz_unserialize($content);
             $content = is_array($content) ? $content : array();
             if(isset($content['version'])){
                 $this->current_version = $content['version'];

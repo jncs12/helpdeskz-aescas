@@ -46,7 +46,7 @@ echo form_open('',['id'=>'manageForm'],['do'=>'remove']).
                     foreach ($cannedList as $item){
                         ?>
                         <tr>
-                            <td><?php echo $item->title;?></td>
+                            <td><?php echo hdz_e($item->title);?></td>
                             <td class="text-right">
                                 <div class="btn-group">
                                     <?php

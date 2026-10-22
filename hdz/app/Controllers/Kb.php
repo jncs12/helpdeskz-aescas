@@ -7,6 +7,8 @@ class Kb extends BaseController
 {
     public function error404()
     {
+        // Antes devolvia HTTP 200 ("soft 404"), o que confunde motores de busca e monitorização
+        $this->response->setStatusCode(404);
         echo view('client/error',[
             'title' => lang('Client.404.title'),
             'body' => lang('Client.404.body')

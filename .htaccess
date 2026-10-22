@@ -1,5 +1,5 @@
 # Disable directory browsing
-#Options All -Indexes
+Options -Indexes
 
 # ----------------------------------------------------------------------
 # Rewrite engine
@@ -46,3 +46,21 @@
 # Disable server signature start
     ServerSignature Off
 # Disable server signature end
+
+# Cabeçalhos de segurança
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+</IfModule>
+
+# Impedir acesso direto a ficheiros sensíveis na raiz
+<FilesMatch "^(pipe\.php|composer\.(json|lock)|\.git.*|docker-compose\.yml)$">
+    <IfModule authz_core_module>
+        Require all denied
+    </IfModule>
+    <IfModule !authz_core_module>
+        Deny from all
+    </IfModule>
+</FilesMatch>

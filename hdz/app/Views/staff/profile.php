@@ -66,7 +66,7 @@ if(isset($success_msg)){
 
                         <div class="form-group">
                             <label><?php echo lang('Admin.form.fullName');?></label>
-                            <input type="text" name="fullname" value="<?php echo staff_data('fullname');?>" class="form-control">
+                            <input type="text" name="fullname" value="<?php echo hdz_e(staff_data('fullname'));?>" class="form-control">
                         </div>
                         <div class="form-group">
                             <label><?php echo lang('Admin.account.timezone');?></label>
@@ -84,7 +84,7 @@ if(isset($success_msg)){
                         </div>
                         <div class="form-group">
                             <label><?php echo lang('Admin.form.email');?></label>
-                            <input type="email" name="email" value="<?php echo staff_data('email');?>" class="form-control">
+                            <input type="email" name="email" value="<?php echo hdz_e(staff_data('email'));?>" class="form-control">
                         </div>
                         <div class="form-group">
                             <label><?php echo lang('Admin.form.signature');?></label>

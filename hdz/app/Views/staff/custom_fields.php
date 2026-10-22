@@ -55,7 +55,7 @@ echo form_open('',['id'=>'manageForm'],['do'=>'remove']).
                     foreach ($customFields as $item){
                         ?>
                         <tr>
-                            <td><?php echo $item->title;?></td>
+                            <td><?php echo hdz_e($item->title);?></td>
                             <td>
                                 <?php echo $customFieldsType[$item->type];?>
                             </td>
@@ -65,13 +65,13 @@ echo form_open('',['id'=>'manageForm'],['do'=>'remove']).
                                 if($item->departments == ''){
                                     echo lang('Admin.form.all');
                                 }else{
-                                    $dep_list = unserialize($item->departments);
+                                    $dep_list = hdz_unserialize($item->departments);
                                     $dep_list = is_array($dep_list) ? $dep_list : array();
                                     $list = array();
                                     foreach ($dep_list as $department)
                                     {
                                         if($dep = getDepartmentByID($department)){
-                                            $list[] = $dep->name;
+                                            $list[] = hdz_e($dep->name);
                                         }
                                     }
                                     echo implode(', ', $list);

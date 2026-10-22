@@ -45,7 +45,7 @@ $this->section('content');
                 ?>
                 <div class="form-group">
                     <label><?php echo lang('Admin.form.createdBy');?></label>
-                    <input type="text" class="form-control" value="<?php echo $staff_canned->fullname;?>" readonly>
+                    <input type="text" class="form-control" value="<?php echo hdz_e($staff_canned->fullname);?>" readonly>
                 </div>
                 <?php
 

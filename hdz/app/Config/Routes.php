@@ -70,6 +70,9 @@ $routes->add('login','UserAuth::login',[
     'as' => 'login',
     'filter' => 'userAuth:visitor'
 ]);
+$routes->add('reset-password/(:num)/(:num)/(:alphanum)','UserAuth::resetPassword/$1/$2/$3',[
+    'as' => 'reset_password',
+]);
 $routes->add('forgot-password','UserAuth::forgot',[
     'as' => 'forgot_password',
     'filter' => 'userAuth:visitor'

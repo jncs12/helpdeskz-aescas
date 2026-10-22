@@ -10,7 +10,7 @@ $this->section('content');
     <div class="page-header row no-gutters py-4">
         <div class="col-12 col-sm-4 text-center text-sm-left mb-0">
             <span class="text-uppercase page-subtitle"><?php echo lang('Admin.tickets.menu');?></span>
-            <h3 class="page-title"><?php echo '[#'.$ticket->id.'] '. esc($ticket->subject);?></h3>
+            <h3 class="page-title"><?php echo '[#'.$ticket->id.'] '. hdz_e($ticket->subject);?></h3>
         </div>
     </div>
     <!-- End Page Header -->
@@ -49,9 +49,9 @@ $this->section('content');
                                     if(isset($departments_list)){
                                         foreach ($departments_list as $item){
                                             if($item->id == $ticket->department_id){
-                                                echo '<option value="'.$item->id.'" selected>'.$item->name.'</option>';
+                                                echo '<option value="'.$item->id.'" selected>'.hdz_e($item->name).'</option>';
                                             }else{
-                                                echo '<option value="'.$item->id.'">'.$item->name.'</option>';
+                                                echo '<option value="'.$item->id.'">'.hdz_e($item->name).'</option>';
                                             }
                                         }
                                     }
@@ -83,9 +83,9 @@ $this->section('content');
                                     if(isset($ticket_priorities)){
                                         foreach ($ticket_priorities as $item){
                                             if($item->id == $ticket->priority_id){
-                                                echo '<option value="'.$item->id.'" selected>'.$item->name.'</option>';
+                                                echo '<option value="'.$item->id.'" selected>'.hdz_e($item->name).'</option>';
                                             }else{
-                                                echo '<option value="'.$item->id.'">'.$item->name.'</option>';
+                                                echo '<option value="'.$item->id.'">'.hdz_e($item->name).'</option>';
                                             }
                                         }
                                     }
@@ -96,15 +96,15 @@ $this->section('content');
                     </div>
                     <?php
                     if($ticket->custom_vars != ''){
-                        $custom_vars = unserialize($ticket->custom_vars);
+                        $custom_vars = hdz_unserialize($ticket->custom_vars);
                         if(is_array($custom_vars)){
                             echo '<div class="row">';
                             foreach ($custom_vars as $item){
                                 ?>
                                     <div class="col-md-6 col-lg-4">
                                         <div class="form-group">
-                                            <label><?php echo $item['title'];?></label>
-                                            <input type="text" value="<?php echo esc($item['value']);?>" class="form-control" readonly>
+                                            <label><?php echo hdz_e($item['title']);?></label>
+                                            <input type="text" value="<?php echo hdz_e($item['value']);?>" class="form-control" readonly>
                                         </div>
                                     </div>
                                 <?php
@@ -126,7 +126,7 @@ $this->section('content');
                     <div class="form-group row">
                         <label class="col-form-label col-lg-2"><?php echo lang('Admin.form.to');?></label>
                         <div class="col">
-                            <input type="text" class="form-control" value="<?php echo esc($ticket->fullname.' <'.$ticket->email.'>');?>" readonly>
+                            <input type="text" class="form-control" value="<?php echo hdz_e($ticket->fullname.' <'.$ticket->email.'>');?>" readonly>
                         </div>
                     </div>
                     <div class="form-group row">
@@ -139,7 +139,7 @@ $this->section('content');
                                         <?php
                                         if(isset($canned_response)){
                                             foreach ($canned_response as $item){
-                                                echo '<option value="'.$item->id.'">'.$item->title.'</option>';
+                                                echo '<option value="'.$item->id.'">'.hdz_e($item->title).'</option>';
                                             }
                                         }
                                         ?>
@@ -178,7 +178,7 @@ $this->section('content');
                                 <?php
                             }
                             ?>
-                            <small class="text-muted"><?php echo lang('Admin.form.allowedFiles').' *.'.implode(', *.', unserialize(site_config('ticket_file_type')));?></small>
+                            <small class="text-muted"><?php echo lang('Admin.form.allowedFiles').' *.'.implode(', *.', hdz_unserialize(site_config('ticket_file_type')));?></small>
                         </div>
                         <?php
                     }
@@ -196,7 +196,7 @@ $this->section('content');
                            ?>
                            <div class="alert alert-light border mb-3">
                                <div class="alert-heading">
-                                   by <?php echo $note->fullname;?>
+                                   by <?php echo hdz_e($note->fullname);?>
                                    <small>&raquo; <?php echo dateFormat($note->date);?></small>
                                    <?php
                                    if(staff_data('admin') == 1 || staff_data('id') == $note->staff_id){
@@ -213,12 +213,12 @@ $this->section('content');
                                    <hr>
                                </div>
                                <div id="plainNote<?php echo $note->id;?>">
-                                   <p><?php echo nl2br($note->message);?></p>
+                                   <p><?php echo hdz_nl2br($note->message);?></p>
                                </div>
                                <div id="inputNote<?php echo $note->id;?>" style="display: none">
                                    <?php echo form_open('',['id' => 'editNoteForm'.$item->id],['do'=>'edit_note','note_id'=>$note->id]);?>
                                    <div class="form-group">
-                                       <textarea class="form-control" name="new_note"><?php echo set_value('new_note', $note->message, false);?></textarea>
+                                       <textarea class="form-control" name="new_note"><?php echo set_value('new_note', $note->message);?></textarea>
                                    </div>
                                    <div class="form-group">
                                        <button class="btn btn-primary"><?php echo lang('Admin.form.save');?></button>
@@ -276,7 +276,7 @@ if(isset($message_result)){
                                     <img src="<?php echo user_avatar($ticket->avatar);?>" class="user-avatar rounded-circle img-fluid" style="max-width: 100px">
                                 </div>
                                 <div class="mb-3">
-                                    <div><?php echo $ticket->fullname;?></div>
+                                    <div><?php echo hdz_e($ticket->fullname);?></div>
                                     <?php
                                     echo '<span class="badge badge-dark">'.lang('Admin.form.user').'</span>';
                                     ?>
@@ -306,7 +306,7 @@ if(isset($message_result)){
                             <div class="text-muted"><i class="fa fa-calendar"></i> <?php echo dateFormat($item->date);?></div>
                         </div>
                         <div id="msg_<?php echo $item->id;?>" class="form-group">
-                            <?php echo ($item->email == 1 ? $item->message : nl2br($item->message));?>
+                            <?php echo hdz_purify($item->email == 1 ? $item->message : nl2br($item->message));?>
                         </div>
                         <?php
                         if($files = ticket_files($ticket->id, $item->id)){
@@ -316,10 +316,12 @@ if(isset($message_result)){
                                 <?php foreach ($files as $file):?>
                                     <div class="form-group">
                                         <span class="knowledgebaseattachmenticon"></span>
-                                        <i class="fa fa-file-archive-o"></i> <a href="<?php echo current_url().'?download='.$file->id;?>" target="_blank"><?php echo $file->name;?></a>
+                                        <i class="fa fa-file-archive-o"></i> <a href="<?php echo current_url().'?download='.$file->id;?>" target="_blank"><?php echo hdz_e($file->name);?></a>
 
                                         <?php echo number_to_size($file->filesize,2);?>
-                                        <a href="<?php echo current_url().'?delete_file='.$file->id;?>" class="btn btn-danger btn-sm"><i class="fa fa-trash"></i> <?php echo lang('Admin.form.delete');?></a>
+                                        <?php echo form_open(current_url(), ['class' => 'd-inline', 'onsubmit' => 'return confirm(\'' . lang('Admin.form.delete') . '?\');'], ['do' => 'delete_file', 'file_id' => $file->id]);?>
+                                        <button type="submit" class="btn btn-danger btn-sm"><i class="fa fa-trash"></i> <?php echo lang('Admin.form.delete');?></button>
+                                        <?php echo form_close();?>
                                     </div>
                                 <?php endforeach;?>
                             </div>
@@ -332,7 +334,7 @@ if(isset($message_result)){
                         <div class="border-top mt-3 pt-4 text-right">
                             <?php
                             if($item->ip != ''){
-                                echo '<i class="fa fa-globe"></i> '.$item->ip;
+                                echo '<i class="fa fa-globe"></i> '.hdz_e($item->ip);
                             }
                             ?>
                         </div>

@@ -102,7 +102,7 @@ if(isset($success_msg)){
                         if(is_array($selectedDepartments)){
                             $default = $selectedDepartments;
                         }elseif(isset($customField)){
-                            $default = unserialize($customField->departments);
+                            $default = hdz_unserialize($customField->departments);
                         }else{
                             $default = '';
                         }

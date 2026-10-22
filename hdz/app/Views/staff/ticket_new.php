@@ -56,9 +56,9 @@ if(isset($success_msg)){
                         if(isset($departments_list)){
                             foreach ($departments_list as $item){
                                 if($item->id == set_value('department')){
-                                    echo '<option value="'.$item->id.'" selected>'.$item->name.'</option>';
+                                    echo '<option value="'.$item->id.'" selected>'.hdz_e($item->name).'</option>';
                                 }else{
-                                    echo '<option value="'.$item->id.'">'.$item->name.'</option>';
+                                    echo '<option value="'.$item->id.'">'.hdz_e($item->name).'</option>';
                                 }
                             }
                         }
@@ -74,9 +74,9 @@ if(isset($success_msg)){
                         if(isset($ticket_priorities)){
                             foreach ($ticket_priorities as $item){
                                 if($item->id == set_value('priority')){
-                                    echo '<option value="'.$item->id.'" selected>'.$item->name.'</option>';
+                                    echo '<option value="'.$item->id.'" selected>'.hdz_e($item->name).'</option>';
                                 }else{
-                                    echo '<option value="'.$item->id.'">'.$item->name.'</option>';
+                                    echo '<option value="'.$item->id.'">'.hdz_e($item->name).'</option>';
                                 }
                             }
                         }
@@ -117,7 +117,7 @@ if(isset($success_msg)){
                         <?php
                         if(isset($canned_response)){
                             foreach ($canned_response as $item){
-                                echo '<option value="'.$item->id.'">'.$item->title.'</option>';
+                                echo '<option value="'.$item->id.'">'.hdz_e($item->title).'</option>';
                             }
                         }
                         ?>
@@ -156,7 +156,7 @@ if(isset($success_msg)){
                     <?php
                 }
                 ?>
-                <small class="text-muted"><?php echo lang('Admin.form.allowedFiles').' *.'.implode(', *.', unserialize(site_config('ticket_file_type')));?></small>
+                <small class="text-muted"><?php echo lang('Admin.form.allowedFiles').' *.'.implode(', *.', hdz_unserialize(site_config('ticket_file_type')));?></small>
             </div>
         <?php
         }

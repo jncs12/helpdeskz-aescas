@@ -54,9 +54,9 @@ echo form_open('',['id'=>'manageForm'],['do'=>'remove']).
                     foreach ($api_list as $item){
                         ?>
                         <tr>
-                            <td><?php echo $item->name;?></td>
+                            <td><?php echo hdz_e($item->name);?></td>
                             <td>
-                                <?php echo $item->token;?>
+                                <?php echo hdz_e($item->token);?>
                             </td>
                             <td><?php
                             if($item->active == 1){

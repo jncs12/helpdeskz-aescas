@@ -47,7 +47,7 @@ marca = str(int(time.time()))
 # ---------------------------------------------------------------- Cliente
 print("Portal do cliente")
 c = requests.Session()
-for caminho in ["/", "/knowledgebase", "/submit-ticket", "/login"]:
+for caminho in ["/", "/search?keyword=teste", "/submit-ticket", "/login", "/forgot-password"]:
     r = c.get(BASE + caminho)
     passo(f"GET {caminho}", r.status_code == 200, f"HTTP {r.status_code}")
 

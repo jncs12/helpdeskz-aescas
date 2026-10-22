@@ -55,7 +55,7 @@ echo form_open('',['id'=>'manageForm'],['do'=>'remove']).
                     ?>
                     <tr>
                         <td>
-                            <?php echo $category->name;?>
+                            <?php echo hdz_e($category->name);?>
                         </td>
                         <td>
                             <?php echo kb_count_articles_category($category->id);?>

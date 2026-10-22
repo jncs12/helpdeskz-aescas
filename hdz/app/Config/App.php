@@ -26,6 +26,13 @@ class App extends Helpdesk
      */
 	public $baseURL = self::SITE_URL;
 
+	public function __construct()
+	{
+		parent::__construct();
+		// Com HTTPS, os cookies só viajam por ligações cifradas
+		$this->cookieSecure = (stripos(self::SITE_URL, 'https://') === 0);
+	}
+
     /**
      * --------------------------------------------------------------------------
      * Index File
@@ -287,7 +294,7 @@ class App extends Helpdesk
      *
      * @var boolean
      */
-    public $cookieHTTPOnly = false;
+    public $cookieHTTPOnly = true;
 
     /**
      * --------------------------------------------------------------------------

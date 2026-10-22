@@ -19,7 +19,7 @@ $this->section('content');
         <table class="table table-striped">
             <thead>
             <tr>
-                <th colspan="2"><?php echo $ticket->subject;?></th>
+                <th colspan="2"><?php echo hdz_e($ticket->subject);?></th>
             </tr>
             </thead>
             <tr>
@@ -28,15 +28,15 @@ $this->section('content');
             </tr>
             <tr>
                 <td><?php echo lang('Client.form.fullName');?>:</td>
-                <td><?php echo $ticket->fullname;?></td>
+                <td><?php echo hdz_e($ticket->fullname);?></td>
             </tr>
             <tr>
                 <td><?php echo lang('Client.form.email');?>:</td>
-                <td><?php echo $ticket->email;?></td>
+                <td><?php echo hdz_e($ticket->email);?></td>
             </tr>
             <tr>
                 <td><?php echo lang('Client.form.department');?>:</td>
-                <td><?php echo $ticket->department_name;?></td>
+                <td><?php echo hdz_e($ticket->department_name);?></td>
             </tr>
         </table>
     </div>

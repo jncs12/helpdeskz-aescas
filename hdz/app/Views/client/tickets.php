@@ -57,7 +57,7 @@ $this->section('content');
                                 <?php echo anchor(site_url(route_to('show_ticket', $item->id)), resume_content($item->subject, 50));?>
                             </td>
                             <td><?php echo dateFormat($item->last_update);?></td>
-                            <td><?php echo $item->department_name;?></td>
+                            <td><?php echo hdz_e($item->department_name);?></td>
                             <td>
                                 <?php
                                 switch ($item->status){

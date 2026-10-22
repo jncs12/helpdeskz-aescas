@@ -55,11 +55,11 @@ echo form_open('',['id'=>'manageForm'],['do'=>'remove']).
                     ?>
                     <tr>
                         <td>
-                            <?php echo $agent->username;?><br>
+                            <?php echo hdz_e($agent->username);?><br>
                             <small><?php echo ($agent->admin ? '<span class="text-danger">'.lang('Admin.agents.administrator').'</span>' : lang('Admin.agents.agent'));?></small>
                         </td>
                         <td>
-                            <?php echo $agent->fullname.'<br><small>'.$agent->email.'</small>';?>
+                            <?php echo hdz_e($agent->fullname).'<br><small>'.hdz_e($agent->email).'</small>';?>
                         </td>
                         <td><?php echo time_ago($agent->registration);?></td>
                         <td>

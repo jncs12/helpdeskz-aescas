@@ -133,18 +133,22 @@ class MailFetcher
         $total_attachments = $message->getAttachmentCount();
         if ($total_attachments > 0) {
             foreach ($message->getAllAttachmentParts() as $attachmentPart) {
-                $fileName = $attachmentPart->getFilename();
-                if ($fileName == '') {
+                $fileName = (string)$attachmentPart->getFilename();
+                // O nome vem do email (não confiável): nunca o usar como caminho.
+                // Guardamos só o nome-base limpo para mostrar e gravamos o ficheiro
+                // com um nome aleatório (antes: path traversal com "../../index.php").
+                $original_name = trim(str_replace(["\0", '/', '\\'], '', basename(str_replace('\\', '/', $fileName))));
+                if ($original_name === '' || $original_name === '.' || $original_name === '..') {
                     continue;
                 }
-                $attachmentPath = WRITEPATH . 'uploads/' . $fileName;
-                $attachmentPart->saveContent($attachmentPath);
-                $fileInfo = new File(WRITEPATH . 'uploads/' . $fileName);
+                $tmpPath = tempnam(WRITEPATH . 'uploads', 'hdz');
+                $attachmentPart->saveContent($tmpPath);
+                $fileInfo = new File($tmpPath);
                 $size = $fileInfo->getSize();
                 $file_type = $fileInfo->getMimeType();
-                $filename = $fileInfo->getRandomName();
+                $filename = bin2hex(random_bytes(16));
                 $fileInfo->move($this->attachment_dir, $filename);
-                $original_name = $fileName;
+                $attachmentPath = $tmpPath;
                 $attachments->addFromTicket(
                     $ticket_id,
                     $message_id,
@@ -186,8 +190,6 @@ class MailFetcher
 
     public function cleanMessage($message)
     {
-        $config = \HTMLPurifier_Config::createDefault();
-        $html_purifier = new \HTMLPurifier($config);
-        return $html_purifier->purify($message);
+        return hdz_purify($message);
     }
 }

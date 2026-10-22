@@ -691,11 +691,9 @@ class Tickets
         }
 
         if(!$search_department){
-            $this->ticketsModel->groupStart();
-            foreach ($staff_departments as $item){
-                $this->ticketsModel->orWhere('tickets.department_id', $item->id);
-            }
-            $this->ticketsModel->groupEnd();
+            $dep_ids = array_column($staff_departments ?: [], 'id');
+            // Sem departamentos → nenhum bilhete (whereIn com [0] nunca coincide)
+            $this->ticketsModel->whereIn('tickets.department_id', $dep_ids ?: [0]);
         }
 
         if($request->getGet('sort')){
@@ -774,9 +772,7 @@ class Tickets
 
     public function purifyHTML($message)
     {
-        $config = \HTMLPurifier_Config::createDefault();
-        $purifier = new \HTMLPurifier($config);
-        return $purifier->purify($message);
+        return hdz_purify($message);
     }
 
     /*

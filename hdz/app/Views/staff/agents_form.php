@@ -66,13 +66,13 @@ if(isset($success_msg)){
             <div class="form-group">
                 <label><?php echo lang('Admin.agents.assignedDepartments');?></label>
                 <?php
-                $assigned = isset($agent) ? unserialize($agent->department) : array();
+                $assigned = isset($agent) ? hdz_unserialize($agent->department) : array();
                 if(isset($departments)){
                     foreach ($departments as $item){
                         ?>
                         <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="dep_<?php echo $item->id;?>" name="department[]" value="<?php echo $item->id;?>" <?php echo in_array($item->id, $assigned) ? 'checked' : '';?>>
-                            <label class="form-check-label" for="dep_<?php echo $item->id;?>"><?php echo $item->name;?></label>
+                            <input type="checkbox" class="form-check-input" id="dep_<?php echo $item->id;?>" name="department[]" value="<?php echo $item->id;?>" <?php echo in_array($item->id, is_array($assigned) ? $assigned : []) ? 'checked' : '';?>>
+                            <label class="form-check-label" for="dep_<?php echo $item->id;?>"><?php echo hdz_e($item->name);?></label>
                         </div>
                         <?php
                     }

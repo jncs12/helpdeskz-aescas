@@ -52,7 +52,7 @@ class Staff
         }
 
         $this->user_data = $data;
-        $this->user_data->department = unserialize($this->user_data->department);
+        $this->user_data->department = hdz_unserialize($this->user_data->department);
         $this->user_data->department = (is_array($this->user_data->department)?$this->user_data->department:array());
         return true;
     }
@@ -120,7 +120,7 @@ class Staff
             'last_login' => ($staff_data->login == 0 ? time() : $staff_data->login)
         ], $staff_data->id);
         $this->addLoginLog($staff_data->id, true);
-        $token = random_string('sha1');
+        $token = hdz_random_string(40);
         $this->update(['token' => $token],$staff_data->id);
         $this->create_session($staff_data->id, $staff_data->password, $token, $remember);
     }
@@ -211,6 +211,9 @@ class Staff
         $where = array();
         foreach ($this->getDepartments() as $item){
             $where[] = array('department_id' => $item->id);
+        }
+        if(count($where) == 0){
+            return 0;
         }
         $ticketsModel = new \App\Models\Tickets();
         if(count($where) > 0){
@@ -352,18 +355,21 @@ class Staff
     {
         if(!$this->staff_departments){
             if($this->getData('admin')){
-                $this->staff_departments = Services::departments()->getAll();
+                $this->staff_departments = Services::departments()->getAll() ?: [];
             }else{
-                $departmentModel = new \App\Models\Departments();
-                $departmentModel->groupStart();
-                foreach ($this->getData('department') as $department_id){
-                    $departmentModel->orWhere('id', $department_id);
+                // Agente sem departamentos (ou com dados inválidos): lista vazia.
+                // Antes: foreach sobre null / "WHERE ()" inválido → erro 500 na lista de bilhetes.
+                $assigned = $this->getData('department');
+                $assigned = is_array($assigned) ? array_filter($assigned, 'is_numeric') : [];
+                if(count($assigned) == 0){
+                    return $this->staff_departments = [];
                 }
-                $q = $departmentModel->groupEnd()
+                $departmentModel = new \App\Models\Departments();
+                $q = $departmentModel->whereIn('id', array_values($assigned))
                     ->orderBy('dep_order','asc')
                     ->get();
-                if($q->resultID->num_rows == 0){
-                    $this->staff_departments = null;
+                if(!$q || $q->resultID->num_rows == 0){
+                    $this->staff_departments = [];
                 }else{
                     $this->staff_departments = $q->getResult();
                     $q->freeResult();

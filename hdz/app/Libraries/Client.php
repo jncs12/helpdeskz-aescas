@@ -82,7 +82,7 @@ class Client
     {
         $request = Services::request();
         $session = Services::session();
-        $token = random_string('md5',60);
+        $token = hdz_random_string(60);
         $hash = password_hash(md5($password.$token.$request->getUserAgent()), PASSWORD_BCRYPT);
         $this->usersModel->protect(false);
         $this->usersModel->update($client_id, [
@@ -130,7 +130,7 @@ class Client
     public function createAccount($name, $email, $password='', $send_mail=true)
     {
         if($password == ''){
-            $password = random_string('alnum', 16);
+            $password = hdz_random_string(16);
         }
         $name = ($name == '' ? $email : $name);
         $this->usersModel->protect(false);
@@ -154,18 +154,57 @@ class Client
         return $client_id;
     }
 
+    /**
+     * Envia um link de redefinição de password (válido 1 hora).
+     * Antes, a password era trocada logo e enviada em claro: qualquer pessoa que
+     * soubesse o email de um utilizador conseguia alterar-lhe a password.
+     */
     public function recoverPassword($client_data)
     {
-        $new_password = random_string('alnum',16);
+        $expires = time() + 3600;
+        $link = site_url(route_to('reset_password', $client_data->id, $expires,
+            $this->resetSignature($client_data, $expires)));
         $emails = new Emails();
-        $emails->sendFromTemplate('lost_password',[
+        return $emails->sendFromTemplate('lost_password', [
             '%client_name%' => $client_data->fullname,
             '%client_email%' => $client_data->email,
-            '%client_password%' => $new_password
+            '%reset_link%' => $link,
+            // Compatibilidade com modelos de email antigos que só têm %client_password%
+            '%client_password%' => $link,
         ], $client_data->email);
+    }
+
+    /**
+     * Assinatura HMAC do link de redefinição. Inclui o hash da password atual,
+     * por isso o link deixa de funcionar assim que a password é alterada (uso único).
+     */
+    public function resetSignature($client_data, $expires)
+    {
+        return hash_hmac('sha256', $client_data->id . '|' . $expires . '|' . $client_data->password, hdz_secret());
+    }
+
+    /**
+     * Devolve o utilizador se o link for válido e não tiver expirado; senão null.
+     */
+    public function verifyResetLink($client_id, $expires, $signature)
+    {
+        if (!ctype_digit((string)$client_id) || !ctype_digit((string)$expires) || (int)$expires < time()) {
+            return null;
+        }
+        if (!$client_data = $this->getRow(['id' => $client_id, 'status' => 1])) {
+            return null;
+        }
+        if (!hash_equals($this->resetSignature($client_data, $expires), (string)$signature)) {
+            return null;
+        }
+        return $client_data;
+    }
+
+    public function setPassword($client_id, $password)
+    {
         $this->usersModel->protect(false);
-        $this->usersModel->update($client_data->id, [
-            'password' => password_hash($new_password,PASSWORD_BCRYPT)
+        $this->usersModel->update($client_id, [
+            'password' => password_hash($password, PASSWORD_BCRYPT)
         ]);
         $this->usersModel->protect(true);
     }
