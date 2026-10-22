@@ -85,9 +85,9 @@ echo form_open('',['id'=>'manageForm'],['do'=>'remove']).
                     <tr>
                         <td>
                             <?php echo resume_content($item->title, 50);?><br>
-                            <small><i class="fa fa-folder-open-o"></i> <?php echo $item->category_name;?></small>
+                            <small><i class="fa fa-folder-open-o"></i> <?php echo hdz_e($item->category_name);?></small>
                         </td>
-                        <td><?php echo $item->author;?></td>
+                        <td><?php echo hdz_e($item->author);?></td>
                         <td><?php echo dateFormat($item->date);?></td>
                         <td><?php echo ($item->last_update == 0 ? '-' : dateFormat($item->last_update));?></td>
                         <td><?php echo $item->views;?></td>

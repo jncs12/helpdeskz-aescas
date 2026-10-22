@@ -3,7 +3,7 @@
  * @var $this \CodeIgniter\View\View
  */
 $this->section('window_title');
-echo site_config('windows_title');
+echo hdz_e(site_config('windows_title'));
 $this->endSection();
 $this->extend('client/template');
 $this->section('content');
@@ -36,13 +36,13 @@ $this->section('content');
                 <?php
                 if($parents = kb_parents($category->parent)){
                     foreach ($parents as $item){
-                        echo ' &nbsp; <a class="inactive_link" href="'.site_url(route_to('category', $item->id, url_title($item->name))).'">'.$item->name.' &nbsp; /</a>';
+                        echo ' &nbsp; <a class="inactive_link" href="'.site_url(route_to('category', $item->id, url_title($item->name))).'">'.hdz_e($item->name).' &nbsp; /</a>';
                     }
                 }
-                echo ' &nbsp; <a class="static_link" href="'.site_url(route_to('category', $category->id, url_title($category->name))).'">'.$category->name.'</a>';
+                echo ' &nbsp; <a class="static_link" href="'.site_url(route_to('category', $category->id, url_title($category->name))).'">'.hdz_e($category->name).'</a>';
                 ?>
             </div>
-            <h2 class="sub_heading mb-3"><?php echo $category->name?></h2>
+            <h2 class="sub_heading mb-3"><?php echo hdz_e($category->name)?></h2>
         <?php endif;?>
         <div class="row">
             <div class="col-lg-8">
@@ -54,7 +54,7 @@ $this->section('content');
                                 <div class="col-lg-6 mt-4">
                                     <div class="pt-2">
                                         <a class="kb_category" href="<?php echo site_url(route_to('category', $item->id, url_title($item->name)));?>">
-                                            <i class="fa fa-folder-open-o kb_article_icon pr-2"></i> <?php echo $item->name;?>
+                                            <i class="fa fa-folder-open-o kb_article_icon pr-2"></i> <?php echo hdz_e($item->name);?>
                                         </a>
                                         <span class="text-muted float-right"><?php echo '('.$total_articles.')';?></span>
                                         <hr>
@@ -63,7 +63,7 @@ $this->section('content');
                                         <div class="py-2">
                                             <i class="fa fa-file-text-o kb_article_icon pr-3"></i>
                                             <a href="<?php echo site_url(route_to('article', $article->id, url_title($article->title)));?>">
-                                                <?php echo $article->title;?>
+                                                <?php echo hdz_e($article->title);?>
                                             </a>
                                         </div>
                                     <?php endforeach;?>
@@ -92,7 +92,7 @@ $this->section('content');
                                     </div>
                                     <div class="mb-1">
                                         <a class="font-weight-bold" href="<?php echo site_url(route_to('article', $item->id, url_title($item->title)));?>">
-                                            <?php echo $item->title;?>
+                                            <?php echo hdz_e($item->title);?>
                                         </a>
                                     </div>
 
@@ -117,7 +117,7 @@ $this->section('content');
                                 <div class="mb-3">
                                     <i class="fa fa-file-text-o kb_article_icon pr-3"></i>
                                     <a href="<?php echo site_url(route_to('article', $item->id, url_title($item->title)));?>">
-                                        <?php echo $item->title;?>
+                                        <?php echo hdz_e($item->title);?>
                                     </a>
                                 </div>
                             <?php endforeach;?>
@@ -130,7 +130,7 @@ $this->section('content');
                             <div class="mb-3">
                                 <i class="fa fa-file-text-o kb_article_icon pr-3"></i>
                                 <a href="<?php echo site_url(route_to('article', $item->id, url_title($item->title)));?>">
-                                    <?php echo $item->title;?>
+                                    <?php echo hdz_e($item->title);?>
                                 </a>
                             </div>
                         <?php endforeach;?>

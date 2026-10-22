@@ -47,7 +47,7 @@ if(isset($success_msg)){
                 </div>
                 <div class="form-group">
                     <label><?php echo lang('Api.token');?></label>
-                    <input type="text" value="<?php echo $api_info->token;?>" class="form-control" readonly>
+                    <input type="text" value="<?php echo hdz_e($api_info->token);?>" class="form-control" readonly>
                 </div>
                 <div class="form-group">
                     <div class="custom-control custom-checkbox">
@@ -66,7 +66,7 @@ if(isset($success_msg)){
             <h5><?php echo lang('Api.permissions');?></h5>
             <div class="row">
                 <?php
-                $options = isset($api_info) ? unserialize($api_info->permissions) : array();
+                $options = isset($api_info) ? hdz_unserialize($api_info->permissions) : array();
                 $options = is_array($options) ? $options : array();
                 foreach ($api_permissions as $item => $detail){
                     ?>

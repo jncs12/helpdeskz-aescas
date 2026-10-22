@@ -18,6 +18,11 @@ class MailFetcher extends BaseController
 
     public function pipe()
     {
+        // O piping é sempre invocado pelo servidor de email via pipe.php (CLI).
+        // Pela web não faz sentido e apenas criaria ficheiros temporários vazios.
+        if (!is_cli()) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
+        }
         $mailFetcherLib = new \App\Libraries\MailFetcher();
         return $mailFetcherLib->parse_pipe();
     }

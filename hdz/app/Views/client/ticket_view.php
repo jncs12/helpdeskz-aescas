@@ -28,7 +28,7 @@ $this->section('content');
 
         <div class="card mb-3">
             <div class="card-body">
-                <h4 class="card-title">[#<?php echo $ticket->id;?>] <?php echo esc($ticket->subject);?></h4>
+                <h4 class="card-title">[#<?php echo $ticket->id;?>] <?php echo hdz_e($ticket->subject);?></h4>
                 <div class="text-muted">
                     <i class="fa fa-calendar"></i> <?php echo dateFormat($ticket->date);?> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
                     <i class="fa fa-calendar"></i> <?php echo dateFormat($ticket->last_update);?>
@@ -37,7 +37,7 @@ $this->section('content');
                     <div class="col-lg-4">
                         <div class="form-group">
                             <label><?php echo lang('Client.form.department');?></label>
-                            <input type="text" value="<?php echo $ticket->department_name;?>" class="form-control" readonly>
+                            <input type="text" value="<?php echo hdz_e($ticket->department_name);?>" class="form-control" readonly>
                         </div>
                     </div>
                     <div class="col-lg-4">
@@ -49,7 +49,7 @@ $this->section('content');
                     <div class="col-lg-4">
                         <div class="form-group">
                             <label><?php echo lang('Client.form.priority');?></label>
-                            <input type="text" value="<?php echo $ticket->priority_name;?>" class="form-control" readonly>
+                            <input type="text" value="<?php echo hdz_e($ticket->priority_name);?>" class="form-control" readonly>
                         </div>
                     </div>
                 </div>
@@ -93,7 +93,7 @@ $this->section('content');
                         <?php
                     }
                     ?>
-                    <small class="text-muted"><?php echo lang('Client.form.allowedFiles');?> <?php echo '*.'.implode(', *.', unserialize(site_config('ticket_file_type')));?></small>
+                    <small class="text-muted"><?php echo lang('Client.form.allowedFiles');?> <?php echo '*.'.implode(', *.', hdz_unserialize(site_config('ticket_file_type')));?></small>
                 </div>
                 <?php
             }
@@ -131,7 +131,7 @@ $this->section('content');
                                             <img src="<?php echo user_avatar($ticket->avatar);?>" class="user-avatar rounded-circle img-fluid" style="max-width: 100px">
                                         </div>
                                         <div class="mb-3">
-                                            <div><?php echo $ticket->fullname;?></div>
+                                            <div><?php echo hdz_e($ticket->fullname);?></div>
                                             <?php
                                             echo '<span class="badge badge-dark">'.lang('Client.form.user').'</span>';
                                             ?>
@@ -161,7 +161,7 @@ $this->section('content');
                                     <small class="text-muted"><i class="fa fa-calendar"></i> <?php echo dateFormat($item->date);?></small>
                                 </div>
                                 <div id="msg_<?php echo $item->id;?>" class="form-group">
-                                    <?php echo ($item->email == 1 ? $item->message : nl2br($item->message));?>
+                                    <?php echo hdz_purify($item->email == 1 ? $item->message : nl2br($item->message));?>
                                 </div>
                                 <?php
                                 if($files = ticket_files($ticket->id, $item->id)){
@@ -171,7 +171,7 @@ $this->section('content');
                                         <?php foreach ($files as $file):?>
                                             <div class="form-group">
                                                 <span class="knowledgebaseattachmenticon"></span>
-                                                <i class="fa fa-file-archive-o"></i> <a href="<?php echo current_url().'?download='.$file->id;?>" target="_blank"><?php echo $file->name;?></a>
+                                                <i class="fa fa-file-archive-o"></i> <a href="<?php echo current_url().'?download='.$file->id;?>" target="_blank"><?php echo hdz_e($file->name);?></a>
                                                 <?php echo number_to_size($file->filesize,2);?>
                                             </div>
                                         <?php endforeach;?>

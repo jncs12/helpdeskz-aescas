@@ -44,7 +44,7 @@ $this->section('content');
                     <label>
                         <?php echo lang('Client.form.department');?>
                     </label>
-                    <input type="text" value="<?php echo $department->name;?>" class="form-control" readonly>
+                    <input type="text" value="<?php echo hdz_e($department->name);?>" class="form-control" readonly>
                 </div>
                 <?php
                 if(isset($customFields)){
@@ -79,7 +79,7 @@ $this->section('content');
                             <?php
                         }
                         ?>
-                        <small class="text-muted"><?php echo lang('Client.form.allowedFiles');?> <?php echo '*.'.implode(', *.', unserialize(site_config('ticket_file_type')));?></small>
+                        <small class="text-muted"><?php echo lang('Client.form.allowedFiles');?> <?php echo '*.'.implode(', *.', hdz_unserialize(site_config('ticket_file_type')));?></small>
                     </div>
                     <?php
                 }

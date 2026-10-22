@@ -18,7 +18,7 @@ $page_controller = isset($page_controller) ? $page_controller : '';
         link_tag('assets/components/select2/css/select2-bootstrap.min.css').
         link_tag('assets/helpdeskz/css/helpdesk.css');
     ?>
-    <title><?php echo site_config('windows_title');?></title>
+    <title><?php echo hdz_e(site_config('windows_title'));?></title>
 </head>
 <body>
 
@@ -33,7 +33,7 @@ $page_controller = isset($page_controller) ? $page_controller : '';
                 </div>
                 <div class="card-footer">
                     <div class="row">
-                        <div class="col-md-6">Copyright &copy; <?php echo site_config('site_name');?></div>
+                        <div class="col-md-6">Copyright &copy; <?php echo hdz_e(site_config('site_name'));?></div>
                         <div class="col-md-6 text-md-right">
                             Powered by <a href="http://www.helpdeskz.com">HelpDeskZ</a>
                         </div>

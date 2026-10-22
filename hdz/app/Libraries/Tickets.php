@@ -774,9 +774,7 @@ class Tickets
 
     public function purifyHTML($message)
     {
-        $config = \HTMLPurifier_Config::createDefault();
-        $purifier = new \HTMLPurifier($config);
-        return $purifier->purify($message);
+        return hdz_purify($message);
     }
 
     /*

@@ -25,7 +25,14 @@ class Tickets extends BaseController
             if (!is_array($this->request->getPost('ticket_id'))) {
                 $error_msg = lang('Admin.error.noItemsSelected');
             } else {
+                $allowedDepartments = array_column($this->staff->getDepartments() ?: [], 'id');
                 foreach ($this->request->getPost('ticket_id') as $ticket_id) {
+                    // Só atua sobre bilhetes de departamentos a que o agente pertence
+                    if (!is_numeric($ticket_id)
+                        || !($ticketData = $tickets->getTicket(['id' => $ticket_id]))
+                        || !in_array($ticketData->department_id, $allowedDepartments)) {
+                        continue;
+                    }
                     if (is_numeric($ticket_id)) {
                         if ($this->request->getPost('action') == 'remove') {
                             $tickets->deleteTicket($ticket_id);
@@ -80,7 +87,7 @@ class Tickets extends BaseController
             $this->session->setFlashdata('ticket_error', lang('Admin.error.ticketNotFound'));
             return redirect()->route('staff_tickets');
         }
-        $key = array_search($ticket->department_id, array_column($this->staff->getDepartments(), 'id'));
+        $key = array_search($ticket->department_id, array_column($this->staff->getDepartments() ?: [], 'id'));
         if (!is_numeric($key)) {
             $this->session->setFlashdata('ticket_error', lang('Admin.error.ticketNotPermission'));
             return redirect()->route('staff_tickets');
@@ -96,9 +103,10 @@ class Tickets extends BaseController
                 ]);
             }
             return $attachments->download($file);
-        } elseif (is_numeric($this->request->getGet('delete_file'))) {
+        } elseif ($this->request->getPost('do') == 'delete_file' && is_numeric($this->request->getPost('file_id'))) {
+            // Só por POST (com token CSRF) — antes era um link GET, vulnerável a CSRF
             if (!$file = $attachments->getRow([
-                'id' => $this->request->getGet('delete_file'),
+                'id' => $this->request->getPost('file_id'),
                 'ticket_id' => $ticket->id
             ])) {
                 return redirect()->to(current_url());
@@ -153,7 +161,7 @@ class Tickets extends BaseController
 
             if ($this->settings->config('ticket_attachment')) {
                 $max_size = $this->settings->config('ticket_file_size') * 1024;
-                $allowed_extensions = unserialize($this->settings->config('ticket_file_type'));
+                $allowed_extensions = hdz_unserialize($this->settings->config('ticket_file_type'));
                 $allowed_extensions = implode(',', $allowed_extensions);
                 $validation->setRule('attachment', 'attachment', 'ext_in[attachment,' . $allowed_extensions . ']|max_size[attachment,' . $max_size . ']', [
                     'ext_in' => lang('Admin.error.fileNotAllowed'),
@@ -170,7 +178,7 @@ class Tickets extends BaseController
                     }
                 }
                 //Message
-                $message = $this->request->getPost('message') . $this->staff->getData('signature');
+                $message = hdz_purify($this->request->getPost('message') . $this->staff->getData('signature'));
                 $message_id = $tickets->addMessage($ticket->id, $message, $this->staff->getData('id'));
 
                 //File
@@ -288,7 +296,7 @@ class Tickets extends BaseController
             ]);
             if ($this->settings->config('ticket_attachment')) {
                 $max_size = $this->settings->config('ticket_file_size') * 1024;
-                $allowed_extensions = unserialize($this->settings->config('ticket_file_type'));
+                $allowed_extensions = hdz_unserialize($this->settings->config('ticket_file_type'));
                 $allowed_extensions = implode(',', $allowed_extensions);
                 $validation->setRule('attachment', 'attachment', 'ext_in[attachment,' . $allowed_extensions . ']|max_size[attachment,' . $max_size . ']', [
                     'ext_in' => lang('Admin.error.fileNotAllowed'),
@@ -310,7 +318,7 @@ class Tickets extends BaseController
                 $name = ($this->request->getPost('fullname') == '') ? $this->request->getPost('email') : $this->request->getPost('fullname');
                 $client_id = $this->client->getClientID($name, $this->request->getPost('email'));
                 $ticket_id = $tickets->createTicket($client_id, $this->request->getPost('subject'), $this->request->getPost('department'), $this->request->getPost('priority'));
-                $message = $this->request->getPost('message') . $this->staff->getData('signature');
+                $message = hdz_purify($this->request->getPost('message') . $this->staff->getData('signature'));
                 $message_id = $tickets->addMessage($ticket_id, $message, $this->staff->getData('id'));
                 $tickets->updateTicket([
                     'last_replier' => $this->staff->getData('id'),
@@ -426,7 +434,7 @@ class Tickets extends BaseController
             } else {
                 $tickets->updateCanned([
                     'title' => esc($this->request->getPost('title')),
-                    'message' => $this->request->getPost('message'),
+                    'message' => hdz_purify($this->request->getPost('message')),
                     'last_update' => time()
                 ], $canned_id);
                 $this->session->setFlashdata('canned_update', lang('Admin.cannedResponses.cannedUpdated'));
@@ -466,7 +474,7 @@ class Tickets extends BaseController
                 $error_msg = 'This is not possible in demo version.';
             } else {
                 $tickets = Services::tickets();
-                $tickets->insertCanned($this->request->getPost('title'), $this->request->getPost('message'));
+                $tickets->insertCanned($this->request->getPost('title'), hdz_purify($this->request->getPost('message')));
                 $this->session->setFlashdata('canned_update', lang('Admin.cannedResponses.cannedInserted'));
                 return redirect()->route('staff_canned');
             }

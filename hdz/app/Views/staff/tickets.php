@@ -76,9 +76,9 @@ $request = \CodeIgniter\Services::request();
                             if($department_list = $departments){
                                 foreach ($department_list as $item){
                                     if($request->getGet('department') == $item->id){
-                                        echo '<option value="'.$item->id.'" selected>'.$item->name.'</option>';
+                                        echo '<option value="'.$item->id.'" selected>'.hdz_e($item->name).'</option>';
                                     }else{
-                                        echo '<option value="'.$item->id.'">'.$item->name.'</option>';
+                                        echo '<option value="'.$item->id.'">'.hdz_e($item->name).'</option>';
                                     }
                                 }
                             }
@@ -191,25 +191,25 @@ echo form_input([
                                 <div class="font-weight-bold">
                                     <a href="<?php echo site_url(route_to('staff_ticket_view', $item->id));?>"><?php echo resume_content($item->subject, 30);?></a>
                                 </div>
-                                <div class="text-muted"><i class="fa fa-user-o"></i> <?php echo $item->fullname;?></div>
+                                <div class="text-muted"><i class="fa fa-user-o"></i> <?php echo hdz_e($item->fullname);?></div>
                             </td>
                             <td nowrap="">
                                 <?php
                                 echo time_ago($item->last_update);
                                 ?>
                                 <?php echo ($item->last_replier == 0 ?
-                                    '<div class="text-muted"><i class="fa fa-user-o"></i> '.$item->fullname.'</div>' :
-                                    '<div class="text-danger"><i class="fa fa-user-secret"></i> '.$item->staff_username);
+                                    '<div class="text-muted"><i class="fa fa-user-o"></i> '.hdz_e($item->fullname).'</div>' :
+                                    '<div class="text-danger"><i class="fa fa-user-secret"></i> '.hdz_e($item->staff_username));
                                 ?>
                             </td>
 
                             <td>
-                                <?php echo $item->department_name;?>
+                                <?php echo hdz_e($item->department_name);?>
                                 <div class="text-muted"><i class="fa fa-commenting-o"></i> <?php echo lang_replace('Admin.tickets.totalReplies',['%number%' => $item->replies]);?></div>
                             </td>
 
-                            <td style="color: <?php echo $item->priority_color;?>">
-                                <?php echo $item->priority_name;?>
+                            <td style="color: <?php echo hdz_e($item->priority_color);?>">
+                                <?php echo hdz_e($item->priority_name);?>
                             </td>
 
                             <td>
@@ -254,7 +254,7 @@ echo form_input([
                                 <?php
                                 if($departments){
                                     foreach ($departments as $item){
-                                        echo '<option value="'.$item->id.'">'.$item->name.'</option>';
+                                        echo '<option value="'.$item->id.'">'.hdz_e($item->name).'</option>';
                                     }
                                 }
                                 ?>
@@ -282,7 +282,7 @@ echo form_input([
                                 <?php
                                 if($priorities){
                                     foreach ($priorities as $item){
-                                        echo '<option value="'.$item->id.'">'.$item->name.'</option>';
+                                        echo '<option value="'.$item->id.'">'.hdz_e($item->name).'</option>';
                                     }
                                 }
                                 ?>

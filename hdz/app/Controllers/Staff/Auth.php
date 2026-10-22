@@ -181,7 +181,7 @@ class Auth extends BaseController
                         $this->staff->update(array_merge($staff_data, [
                             'fullname' => esc($this->request->getPost('fullname')),
                             'email' => $this->request->getPost('email'),
-                            'signature' => $this->request->getPost('signature'),
+                            'signature' => hdz_purify($this->request->getPost('signature')),
                             'timezone' => (in_array($this->request->getPost('timezone'), timezone_identifiers_list())?$this->request->getPost('timezone'):$this->staff->getData('timezone')),
                         ]));
                         $this->session->setFlashdata('form_success', lang('Admin.account.profileUpdated'));

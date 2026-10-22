@@ -65,7 +65,7 @@ class Ticket extends BaseController
 
             if($this->settings->config('ticket_attachment')){
                 $max_size = $this->settings->config('ticket_file_size')*1024;
-                $allowed_extensions = unserialize($this->settings->config('ticket_file_type'));
+                $allowed_extensions = hdz_unserialize($this->settings->config('ticket_file_type'));
                 $allowed_extensions = implode(',', $allowed_extensions);
                 $validation->setRule('attachment', 'attachment', 'ext_in[attachment,'.$allowed_extensions.']|max_size[attachment,'.$max_size.']',[
                     'ext_in' => lang('Client.error.fileNotAllowed'),
@@ -209,7 +209,7 @@ class Ticket extends BaseController
 
             if($this->settings->config('ticket_attachment')){
                 $max_size = $this->settings->config('ticket_file_size')*1024;
-                $allowed_extensions = unserialize($this->settings->config('ticket_file_type'));
+                $allowed_extensions = hdz_unserialize($this->settings->config('ticket_file_type'));
                 $allowed_extensions = implode(',', $allowed_extensions);
                 $validation->setRule('attachment', 'attachment', 'ext_in[attachment,'.$allowed_extensions.']|max_size[attachment,'.$max_size.']',[
                     'ext_in' => lang('Client.error.fileNotAllowed'),

@@ -70,7 +70,7 @@ $this->renderSection('content');
 <div id="footer">
     <div class="container">
         <div class="row">
-            <div class="col-md-6">Copyright &copy; <?php echo site_config('site_name');?></div>
+            <div class="col-md-6">Copyright &copy; <?php echo hdz_e(site_config('site_name'));?></div>
             <div class="col-md-6 text-md-right">
                 Powered by <a href="http://www.helpdeskz.com">HelpDeskZ</a>
             </div>

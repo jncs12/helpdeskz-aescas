@@ -26,15 +26,24 @@ class UserAuth extends BaseController
                 ]
             );
 
-            if($validation->withRequest($this->request)->run() == false){
+            // Limite de tentativas falhadas por IP (mesma configuração do painel de staff)
+            $staffLib = Services::staff();
+            $attemptKey = 'client:' . $this->request->getIPAddress();
+            if($staffLib->isLocked($attemptKey)){
+                $error_msg = lang_replace('Client.error.tooManyAttempts', [
+                    '%minutes%' => $this->settings->config('login_attempt_minutes')
+                ]);
+            }elseif($validation->withRequest($this->request)->run() == false){
                 $error_msg = lang('Client.error.invalidEmailPassword');
             }elseif(!$client_data = $this->client->getRow([
                 'email' => $this->request->getPost('email'),
                 'status'=>1
             ])){
+                $staffLib->addLoginAttempt($attemptKey);
                 $error_msg = lang('Client.error.invalidEmailPassword');
             }else{
                 if(!password_verify($this->request->getPost('password'), $client_data->password)){
+                    $staffLib->addLoginAttempt($attemptKey);
                     $error_msg = lang('Client.error.invalidEmailPassword');
                 }else{
                     $this->client->login($client_data->id, $client_data->password);
@@ -45,6 +54,42 @@ class UserAuth extends BaseController
         }
         return view('client/login',[
             'error_msg' => isset($error_msg) ? $error_msg : null
+        ]);
+    }
+
+    public function resetPassword($client_id, $expires, $signature)
+    {
+        if(!$client_data = $this->client->verifyResetLink($client_id, $expires, $signature)){
+            return view('client/error', [
+                'title' => lang('Client.login.resetInvalidTitle'),
+                'body' => lang('Client.login.resetInvalid'),
+                'footer' => '<a href="'.site_url(route_to('forgot_password')).'">'.lang('Client.login.forgotPassword').'</a>'
+            ]);
+        }
+        if($this->request->getPost('do') == 'submit'){
+            $validation = Services::validation();
+            $validation->setRules([
+                'new_password' => 'required|min_length[8]',
+                'new_password2' => 'matches[new_password]'
+            ],[
+                'new_password' => [
+                    'required' => lang('Client.error.enterPassword'),
+                    'min_length' => lang('Client.error.passwordTooShort'),
+                ],
+                'new_password2' => [
+                    'matches' => lang('Client.error.passwordsNotMatches'),
+                ]
+            ]);
+            if($validation->withRequest($this->request)->run() == false){
+                $error_msg = $validation->listErrors();
+            }else{
+                $this->client->setPassword($client_data->id, $this->request->getPost('new_password'));
+                $this->session->setFlashdata('form_success', lang('Client.login.passwordChanged'));
+                return redirect()->route('login');
+            }
+        }
+        return view('client/reset_password', [
+            'error_msg' => isset($error_msg) ? $error_msg : null,
         ]);
     }
 
@@ -59,11 +104,12 @@ class UserAuth extends BaseController
                 $error_msg = lang('Client.error.invalidCaptcha');
             }elseif($validation->withRequest($this->request)->run() == false) {
                 $error_msg = lang('Client.error.enterValidEmail');
-            }elseif(!$client_data = $this->client->getRow(['email' => $this->request->getPost('email')])){
-                $error_msg = lang('Client.error.emailNotFound');
             }else{
-                $this->client->recoverPassword($client_data);
-                $this->session->setFlashdata('form_success', lang('Client.login.passwordSent'));
+                // A resposta é igual quer o email exista quer não (evita descobrir contas)
+                if($client_data = $this->client->getRow(['email' => $this->request->getPost('email'), 'status' => 1])){
+                    $this->client->recoverPassword($client_data);
+                }
+                $this->session->setFlashdata('form_success', lang('Client.login.resetLinkSent'));
                 return redirect()->route('forgot_password');
             }
         }

@@ -66,7 +66,7 @@ if(isset($success_msg)){
             <div class="form-group">
                 <label><?php echo lang('Admin.agents.assignedDepartments');?></label>
                 <?php
-                $assigned = isset($agent) ? unserialize($agent->department) : array();
+                $assigned = isset($agent) ? hdz_unserialize($agent->department) : array();
                 if(isset($departments)){
                     foreach ($departments as $item){
                         ?>

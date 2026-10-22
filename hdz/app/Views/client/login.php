@@ -18,6 +18,9 @@ $this->section('content');
         <div class="col-lg-6">
             <?php echo form_open('',[],['do'=>'submit']);?>
             <?php
+            if(\Config\Services::session()->has('form_success')){
+                echo '<div class="alert alert-success">'.\Config\Services::session()->getFlashdata('form_success').'</div>';
+            }
             if(isset($error_msg)){
                 echo '<div class="alert alert-danger">'.$error_msg.'</div>';
             }

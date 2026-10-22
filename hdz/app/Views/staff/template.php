@@ -167,7 +167,7 @@
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle text-nowrap px-3" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
                                 <img class="user-avatar rounded-circle mr-2" src="<?php echo staff_avatar(staff_data('avatar'));?>" alt="User Avatar">
-                                <span class="d-none d-md-inline-block"><?php echo staff_data('fullname');?></span>
+                                <span class="d-none d-md-inline-block"><?php echo hdz_e(staff_data('fullname'));?></span>
                             </a>
                             <div class="dropdown-menu dropdown-menu-small">
                                 <a class="dropdown-item" href="<?php echo site_url(route_to('staff_profile'));?>">

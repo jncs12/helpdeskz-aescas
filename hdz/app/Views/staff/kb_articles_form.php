@@ -30,7 +30,7 @@ $this->section('content');
             ?>
             <div class="form-group">
                 <label><?php echo lang('Admin.form.title');?></label>
-                <input type="text" class="form-control" name="title" value="<?php echo set_value('title') ? set_value('title') : (isset($article) ? $article->title : '');?>">
+                <input type="text" class="form-control" name="title" value="<?php echo set_value('title') ? set_value('title') : (isset($article) ? hdz_e($article->title) : '');?>">
             </div>
             <div class="form-group">
                 <label><?php echo lang('Admin.kb.category');?></label>
@@ -69,7 +69,7 @@ $this->section('content');
                 </select>
             </div>
             <div class="form-group">
-                <textarea name="content" id="messageBox" class="form-control"><?php echo set_value('content') ? set_value('content') : (isset($article) ? $article->content : '');?></textarea>
+                <textarea name="content" id="messageBox" class="form-control"><?php echo set_value('content') ? set_value('content') : (isset($article) ? esc($article->content) : '');?></textarea>
             </div>
             <div class="form-group">
                 <button class="btn btn-primary"><?php echo lang('Admin.form.submit');?></button>

@@ -68,15 +68,15 @@ echo form_close();
                         <tr>
                             <td>
                                 <?php
-                                echo $item->name;
+                                echo hdz_e($item->name);
                                 if($item->default){
                                     echo ' <span class="badge badge-dark">'.lang('Admin.form.default').'</span>';
                                 }
                                 ?>
                                 <br>
-                                <small><i class="fa fa-angle-left"></i> <?php echo $item->email;?> <i class="fa fa-angle-right"></i></small>
+                                <small><i class="fa fa-angle-left"></i> <?php echo hdz_e($item->email);?> <i class="fa fa-angle-right"></i></small>
                             </td>
-                            <td><?php echo ($department ? $department->name : '');?></td>
+                            <td><?php echo ($department ? hdz_e($department->name) : '');?></td>
                             <td><?php echo time_ago($item->created);?></td>
                             <td><?php echo ($item->last_update == 0 ? '-' : time_ago($item->last_update));?></td>
                             <td>

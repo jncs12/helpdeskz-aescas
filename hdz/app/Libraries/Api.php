@@ -80,7 +80,7 @@ class Api
         }
         $permission = explode('/', $permission);
         $lang = 'Api.permissionsList.'.$permission[0].'_'.$permission[1];
-        $permissionList = unserialize($this->api_info->permissions);
+        $permissionList = hdz_unserialize($this->api_info->permissions);
         $permissionList = is_array($permissionList) ? $permissionList : array();
         if(!isset($permissionList[$permission[0]][$permission[1]])){
             $this->error_msg = lang('Api.error.noAllowed').' '.lang($lang);
@@ -191,7 +191,7 @@ class Api
         $ip_address = implode(',', $ip_address);
         return $this->model->insert([
             'name' => esc($apiName),
-            'token' => random_string('alnum', 60),
+            'token' => hdz_random_string(60),
             'date' => time(),
             'ip_address' => $ip_address,
             'last_update' => time(),
@@ -214,7 +214,7 @@ class Api
     {
         $request = Services::request();
         if($request->getPost('new_token') == '1'){
-            $data['token'] = random_string('alnum', 60);
+            $data['token'] = hdz_random_string(60);
         }
         $ip_address = $this->parseIps($request->getPost('ip_address'));
         $data['ip_address'] = $ip_address;

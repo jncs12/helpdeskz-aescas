@@ -28,3 +28,4 @@ upload/thumbs/*
 *.sublime-*
 .DS_Store
 Thumbs.db
+hdz/writable/hdz_secret.php

@@ -25,7 +25,7 @@ if(isset($success_msg)){
 ?>
     <div class="card">
         <div class="card-header border-bottom">
-            <h6 class="mb-0"><?php echo $template->name;?></h6>
+            <h6 class="mb-0"><?php echo hdz_e($template->name);?></h6>
         </div>
         <div class="card-body">
             <?php

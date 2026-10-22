@@ -52,7 +52,7 @@ class Staff
         }
 
         $this->user_data = $data;
-        $this->user_data->department = unserialize($this->user_data->department);
+        $this->user_data->department = hdz_unserialize($this->user_data->department);
         $this->user_data->department = (is_array($this->user_data->department)?$this->user_data->department:array());
         return true;
     }
@@ -120,7 +120,7 @@ class Staff
             'last_login' => ($staff_data->login == 0 ? time() : $staff_data->login)
         ], $staff_data->id);
         $this->addLoginLog($staff_data->id, true);
-        $token = random_string('sha1');
+        $token = hdz_random_string(40);
         $this->update(['token' => $token],$staff_data->id);
         $this->create_session($staff_data->id, $staff_data->password, $token, $remember);
     }

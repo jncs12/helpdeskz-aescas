@@ -16,7 +16,7 @@ class CustomFields
     public function parseForm($customField)
     {
         $code = '<div class="form-group">';
-        $code .= '<label>'.$customField->title.' '.($customField->required == 1 ? '<span class="text-danger">*</span>' : '').'</label>';
+        $code .= '<label>'.hdz_e($customField->title).' '.($customField->required == 1 ? '<span class="text-danger">*</span>' : '').'</label>';
         switch ($customField->type){
             case 'text':
             case 'password':
@@ -49,7 +49,7 @@ class CustomFields
         }else{
             $default = (in_array($customField->type, ['text','password']) ? $customField->value : '');
         }
-        return '<input name="custom['.$customField->id.']" type="'.$customField->type.'" value="'.$default.'" class="form-control" '.($customField->required == 1 ? 'required' : '').'>';
+        return '<input name="custom['.$customField->id.']" type="'.hdz_e($customField->type).'" value="'.hdz_e($default).'" class="form-control" '.($customField->required == 1 ? 'required' : '').'>';
     }
 
     private function textarea($customField)
@@ -60,7 +60,7 @@ class CustomFields
         }else{
             $default = $customField->value;
         }
-        return  '<textarea  name="custom['.$customField->id.']" class="form-control" '.($customField->required == 1 ? 'required' : '').'>'.$default.'</textarea>';
+        return  '<textarea  name="custom['.$customField->id.']" class="form-control" '.($customField->required == 1 ? 'required' : '').'>'.hdz_e($default).'</textarea>';
     }
 
 
@@ -79,7 +79,7 @@ class CustomFields
             $checked = in_array($k, $default) ? 'checked' : '';
             $code .= '<div class="custom-control custom-checkbox">';
             $code .= '<input type="checkbox" class="custom-control-input" id="custom'.$customField->id.'_'.$k.'" name="custom['.$customField->id.'][]" value="'.$k.'" '.$checked.'>';
-            $code .= '<label class="custom-control-label" for="custom'.$customField->id.'_'.$k.'">'.$v.'</label>';
+            $code .= '<label class="custom-control-label" for="custom'.$customField->id.'_'.$k.'">'.hdz_e($v).'</label>';
             $code .= '</div>';
         }
         return $code;
@@ -100,7 +100,7 @@ class CustomFields
             $checked = ($k == $default) ? 'checked' : '';
             $code .= '<div class="custom-control custom-radio">';
             $code .= '<input type="radio" class="custom-control-input" id="custom'.$customField->id.'_'.$k.'" name="custom['.$customField->id.']" value="'.$k.'" '.$checked.'>';
-            $code .= '<label class="custom-control-label" for="custom'.$customField->id.'_'.$k.'">'.$v.'</label>';
+            $code .= '<label class="custom-control-label" for="custom'.$customField->id.'_'.$k.'">'.hdz_e($v).'</label>';
             $code .= '</div>';
         }
         return $code;
@@ -118,9 +118,9 @@ class CustomFields
         $code = '<select name="custom['.$customField->id.']" class="custom-select">';
         foreach ($options as $k => $v){
             if($default == $k){
-                $code .= '<option value="'.$k.'" selected>'.$v.'</option>';
+                $code .= '<option value="'.$k.'" selected>'.hdz_e($v).'</option>';
             }else{
-                $code .= '<option value="'.$k.'">'.$v.'</option>';
+                $code .= '<option value="'.$k.'">'.hdz_e($v).'</option>';
             }
         }
         $code .= '</select>';

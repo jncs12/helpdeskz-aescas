@@ -55,7 +55,7 @@ echo form_open('',['id'=>'manageForm'],['do'=>'remove']).
                     foreach ($list_departments as $item){
                         ?>
                         <tr>
-                            <td><?php echo $item->name;?></td>
+                            <td><?php echo hdz_e($item->name);?></td>
                             <td>
                                 <?php echo ($item->private ? lang('Admin.form.private') : lang('Admin.form.public'));?>
                             </td>

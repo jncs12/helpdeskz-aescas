@@ -93,7 +93,7 @@ if(isset($success_msg)){
                 </div>
                 <div class="form-group">
                     <label><?php echo lang('Admin.settings.allowedFileTypes');?></label>
-                    <input type="text" name="ticket_file_type" class="form-control" value="<?php echo set_value('ticket_file_type', implode(', ', unserialize(site_config('ticket_file_type'))));?>">
+                    <input type="text" name="ticket_file_type" class="form-control" value="<?php echo set_value('ticket_file_type', implode(', ', hdz_unserialize(site_config('ticket_file_type'))));?>">
                     <small class="text-muted form-text"><?php echo lang('Admin.settings.allowedFileTypesDescription');?></small>
                 </div>
             </div>

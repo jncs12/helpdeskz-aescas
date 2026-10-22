@@ -130,14 +130,61 @@ function kb_newest($public = 1)
 
 function resume_content($text, $chars, $clean_html = true)
 {
+    $text = (string)$text;
     if ($clean_html) {
         $text = strip_tags($text);
+        // Converte entidades antes de cortar, para não partir "&amp;" a meio
+        $text = html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
     }
-    if (strlen($text) > $chars) {
-        return mb_substr($text, 0, ($chars - 3)) . '...';
-    } else {
-        return $text;
+    if (mb_strlen($text) > $chars) {
+        $text = mb_substr($text, 0, ($chars - 3)) . '...';
     }
+    // O resultado é sempre texto simples, pronto a imprimir em HTML
+    return $clean_html ? hdz_e($text) : $text;
+}
+
+/**
+ * Escapa texto para saída em HTML (conteúdo e atributos).
+ * Não volta a codificar entidades já existentes: parte dos dados antigos
+ * foi gravada já escapada (esc() à entrada) e assim não aparece "&amp;amp;".
+ */
+function hdz_e($value): string
+{
+    return htmlspecialchars((string)$value, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8', false);
+}
+
+/**
+ * Limpa HTML não confiável (mensagens, artigos, respostas) com o HTMLPurifier,
+ * removendo scripts, handlers on*, iframes, etc. Mantém a formatação comum.
+ */
+function hdz_purify($html): string
+{
+    static $purifier = null;
+    if ($purifier === null) {
+        $config = \HTMLPurifier_Config::createDefault();
+        $cacheDir = WRITEPATH . 'cache' . DIRECTORY_SEPARATOR . 'htmlpurifier';
+        if (!is_dir($cacheDir)) {
+            @mkdir($cacheDir, 0775, true);
+        }
+        if (is_dir($cacheDir) && is_writable($cacheDir)) {
+            $config->set('Cache.SerializerPath', $cacheDir);
+        } else {
+            $config->set('Cache.DefinitionImpl', null);
+        }
+        $config->set('HTML.TargetBlank', true);
+        $config->set('URI.AllowedSchemes', ['http' => true, 'https' => true, 'mailto' => true, 'data' => true, 'tel' => true]);
+        $config->set('Attr.AllowedFrameTargets', ['_blank']);
+        $purifier = new \HTMLPurifier($config);
+    }
+    return $purifier->purify((string)$html);
+}
+
+/**
+ * Converte texto simples em HTML seguro com quebras de linha.
+ */
+function hdz_nl2br($text): string
+{
+    return nl2br(hdz_e($text));
 }
 
 #Language
@@ -294,4 +341,52 @@ function str_decode($str)
         }
         return strrev(base64_decode(strrev($ascii)));
     }
+}
+/**
+ * unserialize() seguro: nunca instancia objetos (evita "PHP object injection").
+ */
+function hdz_unserialize($data)
+{
+    if (!is_string($data) || $data === '') {
+        return false;
+    }
+    return @unserialize($data, ['allowed_classes' => false]);
+}
+
+/**
+ * Cadeia aleatória criptograficamente segura (random_int), alfanumérica.
+ * Substitui random_string() do CodeIgniter 4.1, que usa mt_rand/str_shuffle.
+ */
+function hdz_random_string(int $length = 32): string
+{
+    $pool = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    $max = strlen($pool) - 1;
+    $out = '';
+    for ($i = 0; $i < $length; $i++) {
+        $out .= $pool[random_int(0, $max)];
+    }
+    return $out;
+}
+
+/**
+ * Segredo da instalação (para assinar links). Gerado na primeira utilização e
+ * guardado em hdz/writable/hdz_secret.php (fora do alcance da web).
+ */
+function hdz_secret(): string
+{
+    static $secret = null;
+    if ($secret !== null) {
+        return $secret;
+    }
+    $file = WRITEPATH . 'hdz_secret.php';
+    if (is_file($file)) {
+        $value = include $file;
+        if (is_string($value) && strlen($value) >= 32) {
+            return $secret = $value;
+        }
+    }
+    $secret = bin2hex(random_bytes(32));
+    file_put_contents($file, "<?php\n// Gerado automaticamente. Não partilhar. Apagar invalida links pendentes.\nreturn '" . $secret . "';\n", LOCK_EX);
+    @chmod($file, 0640);
+    return $secret;
 }
