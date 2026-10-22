@@ -9,7 +9,7 @@ Checklist para levar as correções de segurança para `suporte.aescas.net`.
   (por exemplo: em *Setup → Email Addresses* qualquer ação dá «This is not possible in demo version»).
 - As únicas personalizações são: a tradução (escrita **por cima** de `Language/en`), o `.htaccess`,
   o `favicon.ico`, o logótipo em `upload/` e o `hdz/app/Config/Helpdesk.php`.
-- A tradução passa a viver em `Language/pt-PT` (com 3 erros corrigidos e 17 mensagens novas).
+- A tradução passa a viver em `Language/pt-PT`, revista para português europeu com tratamento por «tu».
   `Language/en` volta a ser o inglês original.
 - Prefixo das tabelas na BD de produção: `hdzin_` (não `hdz_`). Ter isto em conta ao testar com uma cópia.
 
@@ -37,20 +37,17 @@ Podem ser apagados da produção depois de confirmares que está tudo bem (já n
 
 ## Depois
 
-1. **Modelo de email «Lost password confirmation»** (Setup → Email Templates).
-   O email deixou de levar uma password nova e passa a levar um link de redefinição válido 1 hora.
-   Os modelos antigos continuam a funcionar (o `%client_password%` passa a conter o link), mas o texto
-   fica estranho. Texto sugerido:
-
-   > Recebemos um pedido para redefinir a password da tua conta no %company_name%.
-   > Para escolheres uma nova password, abre este link (válido durante 1 hora):
-   > %reset_link%
-   > Se não fizeste este pedido, ignora este email — a tua password não foi alterada.
+1. **Modelos de email** (Setup → Email Templates). O email de recuperação deixou de levar uma password
+   nova e passa a levar um link válido durante 1 hora. Os modelos antigos continuam a funcionar
+   (o `%client_password%` passa a conter o link), mas o texto fica errado.
+   Recomendado: correr `dev/sql/modelos_email_pt-PT.sql` no phpMyAdmin, que põe os 6 modelos em
+   português europeu (tratamento por «tu») sem mexer no estado ativo/inativo de cada um.
+   **Exporta antes a tabela `hdzin_emails_tpl`**, porque o script substitui os textos atuais.
 
 2. Confirmar que `hdz/writable/` continua com permissão de escrita: é aí que é criado automaticamente o
    `hdz_secret.php` (chave que assina os links de redefinição). Não o apagar nem partilhar.
 3. Testes manuais rápidos: login de staff, abrir e responder a um bilhete, criar um bilhete como cliente,
-   pedir «Esqueci-me da password» com uma conta de teste.
+   pedir «Esqueceste-te da palavra-passe?» com uma conta de teste.
 
 ## Mudanças de comportamento que os utilizadores podem notar
 
