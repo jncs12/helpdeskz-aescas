@@ -16,6 +16,9 @@ services:
       HDZ_DB_USER: hdz
       HDZ_DB_PASSWORD: hdzdev
       HDZ_DB_NAME: helpdeskz
+      # Instalação limpa: hdz_   |   Cópia da BD de produção: hdzin_
+      HDZ_DB_PREFIX: ${HDZ_DB_PREFIX:-hdz_}
+      HDZ_LANG: pt-PT
       HDZ_SITE_URL: http://localhost:8080
       CI_ENVIRONMENT: development
     depends_on:

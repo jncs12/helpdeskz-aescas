@@ -1,15 +1,18 @@
 # Ambiente de desenvolvimento HelpDeskZ — espelha a produção (PHP 8.4 + Apache 2.4)
-FROM php:8.4-apache
+# Debian 12 «bookworm»: a imagem predefinida (Debian 13 «trixie») já não tem a
+# biblioteca libc-client de que a extensão imap precisa. Tem versão arm64 (Apple Silicon).
+FROM php:8.4-apache-bookworm
 
 # Extensões exigidas pelo HelpDeskZ: intl, fileinfo, iconv, mbstring, mysqli, imap
-# (imap saiu do core no PHP 8.4 → instala-se a partir do PECL)
+# (imap saiu do core no PHP 8.4 → PECL; o printf aceita as opções predefinidas:
+#  suporte Kerberos e SSL)
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
-        libicu-dev libonig-dev libc-client-dev libkrb5-dev libzip-dev unzip git \
+        libicu-dev libonig-dev libc-client2007e-dev libkrb5-dev libssl-dev libzip-dev unzip git \
  && docker-php-ext-install intl mysqli \
- && pecl install imap \
+ && printf "\n\n" | pecl install imap \
  && docker-php-ext-enable imap \
- && a2enmod rewrite \
+ && a2enmod rewrite headers \
  && rm -rf /var/lib/apt/lists/*
 
 # Composer (para gerir dependências em fases seguintes)

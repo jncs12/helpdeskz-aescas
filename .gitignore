@@ -29,3 +29,7 @@ upload/thumbs/*
 .DS_Store
 Thumbs.db
 hdz/writable/hdz_secret.php
+
+# Exportações de bases de dados (dados pessoais)
+*.sql.gz
+producao*.sql
