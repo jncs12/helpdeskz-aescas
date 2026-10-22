@@ -17,7 +17,7 @@ class Helpdesk extends BaseConfig
     const DB_USER = HDZ_DEV_DB_USER;
     const DB_PASSWORD = HDZ_DEV_DB_PASSWORD;
     const DB_NAME = HDZ_DEV_DB_NAME;
-    const DB_PREFIX = 'hdz_';
+    const DB_PREFIX = HDZ_DEV_DB_PREFIX;
     const DB_PORT = 3306;
     const SITE_URL = HDZ_DEV_SITE_URL;
     const UPLOAD_PATH = FCPATH . 'upload';
@@ -30,5 +30,6 @@ defined('HDZ_DEV_DB_HOST') || define('HDZ_DEV_DB_HOST', getenv('HDZ_DB_HOST') ?:
 defined('HDZ_DEV_DB_USER') || define('HDZ_DEV_DB_USER', getenv('HDZ_DB_USER') ?: 'hdz');
 defined('HDZ_DEV_DB_PASSWORD') || define('HDZ_DEV_DB_PASSWORD', getenv('HDZ_DB_PASSWORD') ?: 'hdzdev');
 defined('HDZ_DEV_DB_NAME') || define('HDZ_DEV_DB_NAME', getenv('HDZ_DB_NAME') ?: 'helpdeskz');
+defined('HDZ_DEV_DB_PREFIX') || define('HDZ_DEV_DB_PREFIX', getenv('HDZ_DB_PREFIX') ?: 'hdz_');
 defined('HDZ_DEV_LANG') || define('HDZ_DEV_LANG', getenv('HDZ_LANG') ?: 'pt-PT');
 defined('HDZ_DEV_SITE_URL') || define('HDZ_DEV_SITE_URL', getenv('HDZ_SITE_URL') ?: 'http://localhost:8080');
