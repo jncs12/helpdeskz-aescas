@@ -46,6 +46,23 @@ python3 dev/smoke_test.py http://localhost:8080 admin <password>
 
 Corre-o antes e depois de cada alteração. **Nunca o corras contra a produção** — cria bilhetes e utilizadores.
 
+## Testes de segurança
+
+Tentam explorar cada falha corrigida (XSS, CVE conhecidas, autorização, CSRF, recuperação de password,
+path traversal no pipe, limite de tentativas). Precisam de acesso à BD e de correr na mesma máquina da app:
+
+```bash
+python3 dev/security_test.py http://localhost:8080 admin <password>
+
+# Com Docker:
+HDZ_MYSQL="docker compose exec -T db mysql -uhdz -phdzdev helpdeskz" \
+HDZ_PHP="docker compose exec -T app php" \
+python3 dev/security_test.py http://localhost:8080 admin <password>
+```
+
+No fim bloqueiam o login de clientes do teu IP durante uns minutos (é o próprio teste do bloqueio) —
+o script limpa esse bloqueio, mas convém saberes.
+
 ## Fluxo de trabalho
 
 - `master` = código que pode ir para produção.
