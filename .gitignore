@@ -1,0 +1,30 @@
+# Configuração local (contém credenciais) — nunca versionar
+hdz/app/Config/Helpdesk.php
+.env
+
+# Conteúdo gerado em execução
+hdz/writable/attachments/*
+!hdz/writable/attachments/.gitkeep
+hdz/writable/cache/*
+!hdz/writable/cache/index.html
+hdz/writable/debugbar/*
+!hdz/writable/debugbar/.gitkeep
+hdz/writable/logs/*
+!hdz/writable/logs/index.html
+hdz/writable/mails/*
+!hdz/writable/mails/.gitkeep
+hdz/writable/session/*
+!hdz/writable/session/index.html
+hdz/writable/uploads/*
+!hdz/writable/uploads/index.html
+upload/*
+!upload/index.html
+upload/thumbs/*
+!upload/thumbs/index.html
+
+# Editores / SO
+.idea/
+.vscode/
+*.sublime-*
+.DS_Store
+Thumbs.db

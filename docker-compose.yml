@@ -1,0 +1,49 @@
+# Ambiente de desenvolvimento local do HelpDeskZ (AESCAS)
+#   docker compose up -d --build
+#   App:      http://localhost:8080          (instalação: http://localhost:8080/install)
+#   Staff:    http://localhost:8080/staff
+#   Mailpit:  http://localhost:8025          (todos os emails enviados pela app ficam aqui)
+#   MySQL:    localhost:3307  (hdz / hdzdev)
+services:
+  app:
+    build: ./dev
+    ports:
+      - "8080:80"
+    volumes:
+      - ./:/var/www/html
+    environment:
+      HDZ_DB_HOST: db
+      HDZ_DB_USER: hdz
+      HDZ_DB_PASSWORD: hdzdev
+      HDZ_DB_NAME: helpdeskz
+      HDZ_SITE_URL: http://localhost:8080
+      CI_ENVIRONMENT: development
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: mysql:8.0          # mesma versão da produção
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: helpdeskz
+      MYSQL_USER: hdz
+      MYSQL_PASSWORD: hdzdev
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    ports:
+      - "3307:3306"
+    volumes:
+      - dbdata:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-proot"]
+      interval: 5s
+      retries: 20
+
+  mailpit:
+    image: axllent/mailpit
+    ports:
+      - "8025:8025"   # interface web
+      - "1025:1025"   # SMTP (configurar na app: host mailpit, porta 1025, sem encriptação)
+
+volumes:
+  dbdata:
