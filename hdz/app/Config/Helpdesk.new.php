@@ -37,7 +37,7 @@ class Helpdesk extends BaseConfig
     #Upload path for images used in HTML editor and logo
     const UPLOAD_PATH = FCPATH.'upload';
 
-    #Default helpdesk language
+    #Default helpdesk language: 'en' (English) or 'pt-PT' (Português)
     const DEFAULT_LANG = 'en';
 
     #URI name to access to staff panel. Ex: staff / then you can access in http://helpdesk.com/staff

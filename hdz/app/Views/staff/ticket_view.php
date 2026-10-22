@@ -203,8 +203,8 @@ $this->section('content');
                                        ?>
                                        <div class="float-right">
                                            <?php echo form_open('',['id' => 'noteForm'.$item->id],['do'=>'delete_note','note_id'=>$note->id]);?>
-                                           <button type="button" onclick="editNoteToggle('<?php echo $note->id;?>');" class="btn btn-link" title="Edit note" data-toggle="tooltip"><i class="fa fa-edit"></i></button>
-                                           <button type="button" onclick="deleteNote('noteForm<?php echo $item->id;?>');" class="btn btn-link" title="Delete note" data-toggle="tooltip"><i class="fa fa-trash-alt"></i></button>
+                                           <button type="button" onclick="editNoteToggle('<?php echo $note->id;?>');" class="btn btn-link" title="<?php echo lang('Admin.tickets.editNote');?>" data-toggle="tooltip"><i class="fa fa-edit"></i></button>
+                                           <button type="button" onclick="deleteNote('noteForm<?php echo $item->id;?>');" class="btn btn-link" title="<?php echo lang('Admin.tickets.deleteNote');?>" data-toggle="tooltip"><i class="fa fa-trash-alt"></i></button>
                                            <?php echo form_close();?>
                                        </div>
                                        <?php

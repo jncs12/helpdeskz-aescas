@@ -186,6 +186,10 @@ class Emails
             $config['SMTPPass'] = $email->smtp_password;
             $config['SMTPPort'] = $email->smtp_port;
             $config['SMTPCrypto'] = $email->smtp_encryption;
+            // 5 s (valor por omissão) é pouco para o arranque TLS com o Gmail:
+            // em produção havia falhas "SSL: Handshake timed out" várias vezes por semana.
+            // (10 s × 2 tentativas: pior caso aceitável se o servidor estiver em baixo)
+            $config['SMTPTimeout'] = 10;
         }
         $config['userAgent'] = 'HelpDeskZ';
         $config['newline'] = "\r\n";
@@ -201,10 +205,14 @@ class Emails
                 $emailClass->attach($file_content, 'attachment', $file['name'], $file['file_type']);
             }
         }
-        if(!$emailClass->send())
+        // Uma segunda tentativa resolve a maioria das falhas momentâneas de ligação SMTP
+        if(!$emailClass->send(false) && !$emailClass->send(false))
         {
             log_message('error', 'Error sending email to '.$user_email);
+            $emailClass->clear(true);
+            return false;
         }
+        $emailClass->clear(true);
         return true;
     }
 

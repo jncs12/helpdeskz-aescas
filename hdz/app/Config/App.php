@@ -104,7 +104,7 @@ class App extends Helpdesk
      *
      * @var string[]
      */
-	public $supportedLocales = ['en'];
+	public $supportedLocales = ['en', 'pt-PT'];
 
     /**
      * --------------------------------------------------------------------------

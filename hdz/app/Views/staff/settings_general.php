@@ -99,7 +99,7 @@ $this->section('content');
                     <img src="<?php echo site_logo();?>" style="max-height: 50px" class="img-fluid">
                     <?php
                     if(site_config('logo') != ''){
-                        echo '<div><button type="button" class="btn btn-link" onclick="$(\'#logoForm\').submit();"><i class="far fa-trash-alt"></i> Delete logo</button></div>';
+                        echo '<div><button type="button" class="btn btn-link" onclick="$(\'#logoForm\').submit();"><i class="far fa-trash-alt"></i> '.lang('Admin.settings.deleteLogo').'</button></div>';
                     }
                     ?>
                 </div>

@@ -42,7 +42,9 @@ return [
         'noteUpdated' => 'Note was updated.',
         'enterNote' => 'Enter your note.',
         'notesSaved' => 'Your note was added.',
-        'addNote' => 'Add note'
+        'addNote' => 'Add note',
+        'editNote' => 'Edit note',
+        'deleteNote' => 'Delete note'
     ],
     'account' => [
         'menu' => 'Account',
@@ -112,6 +114,7 @@ return [
         'emailAddresses' => 'Email addresses',
         'emailTemplates' => 'Email templates',
         'changeLogo' => 'Change logo',
+        'deleteLogo' => 'Delete logo',
         'logoRestored' => 'Default logo was restored.',
         'logoChanged' => 'Logo has been changed.',
         'brandName' => 'Brand name',

@@ -1,0 +1,43 @@
+<?php
+// Português europeu, tratamento por «tu» (instalador)
+return [
+    'welcome' => 'Olá!',
+    'welcomeInfo' => 'Bem-vindo ao HelpDeskZ v%version%. Escolhe uma das opções seguintes:',
+    'installSite' => 'Instalar uma nova cópia',
+    'upgradeSite' => 'Atualizar o meu HelpDeskZ',
+    'installWizard' => 'Assistente de instalação',
+    'installInfo1' => 'Bem-vindo à instalação do HelpDeskZ! Vai ser rápido e simples. Se precisares de ajuda, consulta a documentação (readme.html).',
+    'installInfo2' => 'Se tiveres ideias para melhorar o software ou alguma dúvida, visita o nosso [a]fórum[/a].',
+    'continue' => 'Continuar',
+    'tryAgain' => 'Tentar novamente',
+    'someErrors' => 'Foram encontrados alguns erros:',
+    'installHelpDesk' => 'Instalar o HelpDeskZ',
+    'administration' => 'Administrador',
+    'fullName' => 'Nome completo',
+    'email' => 'Endereço de e-mail',
+    'username' => 'Nome de utilizador',
+    'password' => 'Palavra-passe',
+    'confirmPassword' => 'Confirmar palavra-passe',
+    'complete' => 'Instalação concluída!',
+    'completeDescr' => 'O HelpDeskZ foi instalado com sucesso!',
+    'installLocked' => 'O instalador foi bloqueado por motivos de segurança. Para fazeres uma nova instalação, apaga o ficheiro /hdz/writable/cache/install.config',
+    'isLocked' => 'O instalador está bloqueado. Para continuares, apaga o ficheiro \'install.config\' da pasta de cache.',
+    'goToStaffPanel' => 'Ir para o painel de staff',
+    'goToHelpDesk' => 'Ir para a página inicial do helpdesk',
+    'error' => [
+        'phpVersion' => 'É necessário o PHP [b]%req%+[/b]. Estás a usar a versão [b]%used%[/b].',
+        'mysql' => 'O MySQL está desativado.',
+        'writable' => 'A pasta [b]%folder%[/b] não tem permissão de escrita.',
+        'file' => 'O ficheiro %file% não existe.',
+        'fullName' => 'Escreve o teu nome completo, só com letras, números e espaços.',
+        'email' => 'Introduz um endereço de e-mail válido.',
+        'username' => 'Introduz um nome de utilizador válido, só com letras, números, sublinhados e hífenes.',
+        'password' => 'Introduz uma palavra-passe válida, com pelo menos 6 caracteres.',
+        'passwordConfirmation' => 'As palavras-passe não coincidem.'
+    ],
+    'upgradeWizard' => 'Assistente de atualização',
+    'upgradeInfo' => 'O teu HelpDeskZ vai ser atualizado para a versão %version%. Carrega no botão abaixo para começar.',
+    'upgradeStop' => 'Já estás a usar a versão mais recente do HelpDeskZ. Não é preciso atualizar.',
+    'upgradeNoVersion' => 'Não foi encontrada nenhuma instalação do HelpDeskZ.',
+    'upgradeFromVersion' => 'Vais atualizar da v%old% para a v%new%.'
+];
