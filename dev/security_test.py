@@ -161,6 +161,20 @@ existe = sql(f"SELECT COUNT(*), MAX(status) FROM hdz_tickets WHERE id={alvo}").s
 passo("Ação em massa não apaga bilhete de outro departamento", existe[0] == "1")
 passo("Ação em massa não altera bilhete de outro departamento", existe[1] != "3", f"status={existe[1]}")
 
+# Agente sem departamentos (erro mais frequente nos logs de produção: 500 em /staff/tickets)
+sem_dep = f"semdep{marca}"
+r = admin.get(BASE + "/staff/agents/new")
+admin.post(BASE + "/staff/agents/new", data={
+    "csrf_test_name": csrf(r.text), "do": "submit", "fullname": "Sem Departamentos", "username": sem_dep,
+    "email": f"{sem_dep}@example.test", "password": "agente123", "admin": "0", "active": "1"})
+agente0 = login_staff(sem_dep, "agente123")
+r = agente0.get(BASE + "/staff/tickets")
+passo("Agente sem departamentos abre a lista sem erro 500", r.status_code == 200, f"HTTP {r.status_code}")
+passo("Agente sem departamentos não vê bilhetes", "/staff/tickets/view/" not in r.text)
+r = agente0.get(f"{BASE}/staff/tickets/view/{alvo}")
+passo("Agente sem departamentos não abre bilhetes", r.status_code == 200 and f"Alvo {marca}" not in r.text,
+      f"HTTP {r.status_code}")
+
 # ------------------------------------------------------------------ CSRF em eliminação de anexos
 print("CSRF")
 png = (b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x06\x00\x00\x00\x1f\x15\xc4\x89"
