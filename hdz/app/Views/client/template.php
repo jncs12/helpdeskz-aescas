@@ -82,7 +82,8 @@ $this->renderSection('content');
 echo script_tag('assets/components/jquery/jquery.min.js').
     script_tag('assets/components/bootstrap/js/bootstrap.bundle.min.js').
     script_tag('assets/components/select2/js/select2.min.js').
-    script_tag('assets/helpdeskz/js/helpdesk.js');
+    script_tag('assets/helpdeskz/js/helpdesk.js').
+    script_tag('assets/helpdeskz/js/submit-once.js');
 $this->renderSection('script_block');
 ?>
 </body>

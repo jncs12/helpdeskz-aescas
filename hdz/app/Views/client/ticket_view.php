@@ -72,7 +72,7 @@ $this->section('content');
             </div>
 
             <?php
-            echo form_open_multipart('',['id'=>'replyForm','style'=>(!isset($error_msg) ? 'display:none;' : '')],['do' => 'reply']);
+            echo form_open_multipart('',['data-submit-once' => lang('Client.form.sending'), 'id'=>'replyForm','style'=>(!isset($error_msg) ? 'display:none;' : '')],['do' => 'reply']);
             ?>
             <div class="form-group">
                 <label><?php echo lang('Client.form.yourMessage');?></label>

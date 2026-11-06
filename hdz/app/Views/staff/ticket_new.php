@@ -29,7 +29,7 @@ if(isset($success_msg)){
     </div>
     <div class="card-body">
         <?php
-        echo form_open_multipart('',[],['do'=>'submit']);
+        echo form_open_multipart('',['data-submit-once' => lang('Admin.form.sending')],['do'=>'submit']);
         ?>
 
 

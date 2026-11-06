@@ -28,6 +28,89 @@ class Tickets
         $this->ticketsModel = new \App\Models\Tickets();
         $this->messagesModel = new TicketsMessage();
     }
+    /*
+     * --------------------------------
+     * Proteção contra submissões repetidas
+     * --------------------------------
+     * Quem carrega duas vezes em «Enviar» (ou volta a carregar porque a página demora) faz
+     * chegar dois pedidos iguais quase ao mesmo tempo. Cada criação de ticket/resposta passa a
+     * correr com um bloqueio do MySQL (GET_LOCK) e, dentro dele, verifica-se se a mesma coisa
+     * já foi gravada há pouco. Se sim, reaproveita-se em vez de duplicar.
+     */
+
+    /** Segundos durante os quais um ticket ou resposta igual é considerado repetido */
+    const DUPLICATE_WINDOW = 120;
+
+    protected function lockName($name)
+    {
+        $db = Database::connect();
+        // Nome com a BD e o prefixo: no alojamento partilhado o servidor MySQL serve outros sites
+        return 'hdz_'.sha1($db->getDatabase().'|'.$db->getPrefix().'|'.$name);
+    }
+
+    /**
+     * Obtém um bloqueio exclusivo (espera até $timeout segundos).
+     * Se falhar, devolve false e o pedido continua sem bloqueio — a verificação de
+     * duplicados continua a apanhar os casos que não sejam simultâneos.
+     */
+    public function acquireLock($name, $timeout=15)
+    {
+        try {
+            $row = Database::connect()->query('SELECT GET_LOCK(?, ?) AS l', [$this->lockName($name), (int)$timeout])->getRow();
+            return $row && (int)$row->l === 1;
+        } catch (\Throwable $e) {
+            log_message('error', 'GET_LOCK falhou: '.$e->getMessage());
+            return false;
+        }
+    }
+
+    public function releaseLock($name)
+    {
+        try {
+            Database::connect()->query('SELECT RELEASE_LOCK(?)', [$this->lockName($name)]);
+        } catch (\Throwable $e) {
+            log_message('error', 'RELEASE_LOCK falhou: '.$e->getMessage());
+        }
+    }
+
+    /**
+     * Ticket do mesmo utilizador, com o mesmo assunto e a mesma mensagem inicial,
+     * criado nos últimos DUPLICATE_WINDOW segundos. Devolve o id ou null.
+     */
+    public function findDuplicateTicket($client_id, $subject, $message)
+    {
+        $db = Database::connect();
+        $row = $db->table('tickets')
+            ->select($db->prefixTable('tickets').'.id')
+            ->join('tickets_messages', 'tickets_messages.ticket_id = tickets.id')
+            ->where('tickets.user_id', $client_id)
+            ->where('tickets.subject', $subject)
+            ->where('tickets.date >=', time() - self::DUPLICATE_WINDOW)
+            ->where('tickets_messages.message', $message)
+            ->orderBy('tickets.id', 'desc')
+            ->get(1)
+            ->getRow();
+        return $row ? (int)$row->id : null;
+    }
+
+    /**
+     * Resposta igual do mesmo autor (cliente se $staff_id = 0) no mesmo ticket,
+     * enviada nos últimos DUPLICATE_WINDOW segundos. Devolve o id da mensagem ou null.
+     */
+    public function findDuplicateMessage($ticket_id, $message, $staff_id=0)
+    {
+        $row = $this->messagesModel->select('id')
+            ->where('ticket_id', $ticket_id)
+            ->where('staff_id', $staff_id)
+            ->where('customer', ($staff_id == 0 ? 1 : 0))
+            ->where('message', $message)
+            ->where('date >=', time() - self::DUPLICATE_WINDOW)
+            ->orderBy('id', 'desc')
+            ->get(1)
+            ->getRow();
+        return $row ? (int)$row->id : null;
+    }
+
     public function createTicket($client_id, $subject, $department_id=1,$priority_id=1)
     {
         $departments = Services::departments();
@@ -319,6 +402,14 @@ class Tickets
      */
     public function newTicketNotification($ticket)
     {
+        // Os emails seguem depois de a página ter sido entregue (ver AfterResponse)
+        AfterResponse::run(function () use ($ticket) {
+            $this->newTicketNotificationNow($ticket);
+        });
+    }
+
+    protected function newTicketNotificationNow($ticket)
+    {
         //Send Mail to client
         $emails = new Emails();
         $emails->sendFromTemplate('new_ticket',[
@@ -333,6 +424,14 @@ class Tickets
     }
 
     public function staffNotification($ticket)
+    {
+        // Os emails seguem depois de a página ter sido entregue (ver AfterResponse)
+        AfterResponse::run(function () use ($ticket) {
+            $this->staffNotificationNow($ticket);
+        });
+    }
+
+    protected function staffNotificationNow($ticket)
     {
         $emails = new Emails();
         $staffModel = new \App\Models\Staff();
@@ -355,6 +454,14 @@ class Tickets
     }
 
     public function replyTicketNotification($ticket, $message, $attachments=null)
+    {
+        // Os emails seguem depois de a página ter sido entregue (ver AfterResponse)
+        AfterResponse::run(function () use ($ticket, $message, $attachments) {
+            $this->replyTicketNotificationNow($ticket, $message, $attachments);
+        });
+    }
+
+    protected function replyTicketNotificationNow($ticket, $message, $attachments=null)
     {
         $files = array();
         if(is_array($attachments)){
@@ -382,6 +489,14 @@ class Tickets
     }
 
     public function autoResponseNotification($ticket)
+    {
+        // Os emails seguem depois de a página ter sido entregue (ver AfterResponse)
+        AfterResponse::run(function () use ($ticket) {
+            $this->autoResponseNotificationNow($ticket);
+        });
+    }
+
+    protected function autoResponseNotificationNow($ticket)
     {
         //Send Mail to client
         $emails = new Emails();

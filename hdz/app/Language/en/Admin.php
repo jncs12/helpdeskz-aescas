@@ -241,6 +241,7 @@ return [
         'massAction' => 'Mass action',
         'noChange' => 'No change',
         'submit' => 'Submit',
+        'sending' => 'Sending…',
         'delete' => 'Delete',
         'cancel' => 'Cancel',
         'general' => 'General',

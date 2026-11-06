@@ -107,15 +107,32 @@ class Ticket extends BaseController
             }elseif($validation->withRequest($this->request)->run() == false){
                 $error_msg = $validation->listErrors();
             }else{
-                if($this->settings->config('ticket_attachment')){
-                    if($uploaded_files = $attachments->ticketUpload()){
-                        $files = $uploaded_files;
-                    }
-                }
+                // Pedidos repetidos (duplo clique, carregar outra vez em «Enviar») do mesmo
+                // utilizador esperam aqui uns pelos outros e o segundo encontra o ticket do primeiro
+                $lock = 'new_ticket|'.($this->client->isOnline()
+                        ? 'id:'.$this->client->getData('id')
+                        : 'email:'.mb_strtolower(trim($this->request->getPost('email'))));
+                $tickets->acquireLock($lock);
+
                 if($this->client->isOnline()){
                     $client_id = $this->client->getData('id');
                 }else{
                     $client_id = $this->client->getClientID($this->request->getPost('fullname'), $this->request->getPost('email'));
+                }
+                $message = nl2br(esc($this->request->getPost('message')));
+
+                if($duplicate_id = $tickets->findDuplicateTicket($client_id, $this->request->getPost('subject'), $message)){
+                    $tickets->releaseLock($lock);
+                    log_message('notice', 'Ticket repetido ignorado (já existe o #'.$duplicate_id.')');
+                    $ticket_preview = sha1($duplicate_id);
+                    $this->session->set('ticket_preview', $ticket_preview);
+                    return redirect()->route('ticket_preview', [$duplicate_id, $ticket_preview]);
+                }
+
+                if($this->settings->config('ticket_attachment')){
+                    if($uploaded_files = $attachments->ticketUpload()){
+                        $files = $uploaded_files;
+                    }
                 }
 
                 $ticket_id = $tickets->createTicket($client_id, $this->request->getPost('subject'), $department->id);
@@ -124,12 +141,13 @@ class Ticket extends BaseController
                     'custom_vars' => serialize($customFieldList)
                 ], $ticket_id);
                 //Message
-                $message_id = $tickets->addMessage($ticket_id, nl2br(esc($this->request->getPost('message'))), 0);
+                $message_id = $tickets->addMessage($ticket_id, $message, 0);
 
                 //File
                 if(isset($files)){
                     $attachments->addTicketFiles($ticket_id, $message_id, $files);
                 }
+                $tickets->releaseLock($lock);
 
 
                 $ticket = $tickets->getTicket(['id' => $ticket_id]);
@@ -219,18 +237,29 @@ class Ticket extends BaseController
             if($validation->withRequest($this->request)->run() == false) {
                 $error_msg = $validation->listErrors();
             }else{
+                $message = nl2br(esc($this->request->getPost('message')));
+                $lock = 'reply|'.$info->id;
+                $tickets->acquireLock($lock);
+                // Resposta repetida (duplo clique): não grava nem notifica outra vez
+                if($tickets->findDuplicateMessage($info->id, $message, 0)){
+                    $tickets->releaseLock($lock);
+                    log_message('notice', 'Resposta repetida ignorada no ticket #'.$info->id);
+                    $this->session->setFlashdata('form_success',lang('Client.viewTickets.replySent'));
+                    return redirect()->to(current_url());
+                }
                 if($this->settings->config('ticket_attachment')){
                     if($uploaded_files = $attachments->ticketUpload()){
                         $files = $uploaded_files;
                     }
                 }
                 //Message
-                $message_id = $tickets->addMessage($info->id, nl2br(esc($this->request->getPost('message'))));
+                $message_id = $tickets->addMessage($info->id, $message);
                 $tickets->updateTicketReply($info->id, $info->status);
                 //File
                 if(isset($files)){
                     $attachments->addTicketFiles($info->id, $message_id, $files);
                 }
+                $tickets->releaseLock($lock);
 
                 $tickets->staffNotification($info);
                 $tickets->autoResponseNotification($info);
