@@ -109,6 +109,19 @@ python3 dev/security_test.py http://localhost:8080 admin <password>
 No fim bloqueiam o login de clientes do teu IP durante uns minutos (é o próprio teste do bloqueio) —
 o script limpa esse bloqueio, mas convém saberes.
 
+## Teste de tickets duplicados
+
+Simula vários cliques em «Enviar» (em paralelo e com uns segundos de intervalo) em novos tickets e
+respostas, no portal e no painel de staff. Em cada caso só pode ficar gravado um ticket/uma resposta:
+
+```bash
+HDZ_MYSQL="docker compose exec -T db mysql -uhdz -phdzdev helpdeskz" \
+HDZ_PHP="docker compose exec -T app php" \
+python3 dev/duplicados_test.py http://localhost:8080 admin <password>
+```
+
+Com uma cópia da BD de produção, acrescenta `HDZ_PREFIX=hdzin_`.
+
 ## Fluxo de trabalho
 
 - `master` = código que pode ir para produção.

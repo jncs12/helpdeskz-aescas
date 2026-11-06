@@ -230,7 +230,8 @@ echo script_tag('assets/components/jquery/jquery.min.js').
     script_tag('assets/components/sweetalert/sweetalert2.all.min.js').
     script_tag('assets/components/blockui/jquery.blockUI.js').
     script_tag('assets/components/bs-custom-file-input/bs-custom-file-input-min.js').
-    script_tag('assets/helpdeskz/js/staff.js');
+    script_tag('assets/helpdeskz/js/staff.js').
+    script_tag('assets/helpdeskz/js/submit-once.js');
 $this->renderSection('script_block');
 ?>
 </body>

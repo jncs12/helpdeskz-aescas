@@ -60,6 +60,7 @@ return [
         'email' => 'Endereço de e-mail',
         'password' => 'Palavra-passe',
         'submit' => 'Enviar',
+        'sending' => 'A enviar…',
         'captchaVerification' => 'Verificação captcha',
         'search' => 'Pesquisar',
         'ticketID' => 'Número do ticket',

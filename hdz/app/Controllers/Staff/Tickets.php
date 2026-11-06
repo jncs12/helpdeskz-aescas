@@ -172,13 +172,22 @@ class Tickets extends BaseController
             if ($validation->withRequest($this->request)->run() == false) {
                 $error_msg = $validation->listErrors();
             } else {
+                $message = hdz_purify($this->request->getPost('message') . $this->staff->getData('signature'));
+                $lock = 'reply|' . $ticket->id;
+                $tickets->acquireLock($lock);
+                // Resposta repetida (duplo clique): não grava nem volta a enviar o email ao utilizador
+                if ($tickets->findDuplicateMessage($ticket->id, $message, $this->staff->getData('id'))) {
+                    $tickets->releaseLock($lock);
+                    log_message('notice', 'Resposta repetida ignorada no ticket #' . $ticket->id);
+                    $this->session->setFlashdata('ticket_update', lang('Admin.tickets.messageSent'));
+                    return redirect()->to(current_url());
+                }
                 if ($this->settings->config('ticket_attachment')) {
                     if ($files_uploaded = $attachments->ticketUpload()) {
                         $files = $files_uploaded;
                     }
                 }
                 //Message
-                $message = hdz_purify($this->request->getPost('message') . $this->staff->getData('signature'));
                 $message_id = $tickets->addMessage($ticket->id, $message, $this->staff->getData('id'));
 
                 //File
@@ -186,6 +195,7 @@ class Tickets extends BaseController
                     $attachments->addTicketFiles($ticket->id, $message_id, $files);
                 }
                 $tickets->updateTicketReply($ticket->id, $ticket->status, true);
+                $tickets->releaseLock($lock);
                 if (!defined('HDZDEMO')) {
                     $tickets->replyTicketNotification($ticket, $message, (isset($files) ? $files : null));
                 }
@@ -310,15 +320,24 @@ class Tickets extends BaseController
                 $error_msg = 'This is not possible in demo version.';
             } else {
                 $attachments = Services::attachments();
+                $lock = 'new_ticket|email:' . mb_strtolower(trim($this->request->getPost('email')));
+                $tickets->acquireLock($lock);
+                $name = ($this->request->getPost('fullname') == '') ? $this->request->getPost('email') : $this->request->getPost('fullname');
+                $client_id = $this->client->getClientID($name, $this->request->getPost('email'));
+                $message = hdz_purify($this->request->getPost('message') . $this->staff->getData('signature'));
+                // Ticket repetido (duplo clique): mostra o que já foi criado
+                if ($duplicate_id = $tickets->findDuplicateTicket($client_id, $this->request->getPost('subject'), $message)) {
+                    $tickets->releaseLock($lock);
+                    log_message('notice', 'Ticket repetido ignorado (já existe o #' . $duplicate_id . ')');
+                    $this->session->setFlashdata('form_success', lang('Admin.tickets.ticketCreated'));
+                    return redirect()->route('staff_ticket_view', [$duplicate_id]);
+                }
                 if ($this->settings->config('ticket_attachment')) {
                     if ($uploaded_files = $attachments->ticketUpload()) {
                         $files = $uploaded_files;
                     }
                 }
-                $name = ($this->request->getPost('fullname') == '') ? $this->request->getPost('email') : $this->request->getPost('fullname');
-                $client_id = $this->client->getClientID($name, $this->request->getPost('email'));
                 $ticket_id = $tickets->createTicket($client_id, $this->request->getPost('subject'), $this->request->getPost('department'), $this->request->getPost('priority'));
-                $message = hdz_purify($this->request->getPost('message') . $this->staff->getData('signature'));
                 $message_id = $tickets->addMessage($ticket_id, $message, $this->staff->getData('id'));
                 $tickets->updateTicket([
                     'last_replier' => $this->staff->getData('id'),
@@ -328,6 +347,7 @@ class Tickets extends BaseController
                 if (isset($files)) {
                     $attachments->addTicketFiles($ticket_id, $message_id, $files);
                 }
+                $tickets->releaseLock($lock);
 
                 $ticket = $tickets->getTicket(['id' => $ticket_id]);
                 $tickets->replyTicketNotification($ticket, $message, (isset($files) ? $files : null));

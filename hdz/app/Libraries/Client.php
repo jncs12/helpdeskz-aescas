@@ -144,12 +144,15 @@ class Client
         $client_id = $this->usersModel->getInsertID();
 
         if($send_mail){
-            $emails = new Emails();
-            $emails->sendFromTemplate('new_user',[
-                '%client_name%' => $name,
-                '%client_email%' => $email,
-                '%client_password%' => $password
-            ], $email);
+            // Enviado depois da resposta: acontece, por exemplo, ao abrir o primeiro ticket
+            AfterResponse::run(function () use ($name, $email, $password) {
+                $emails = new Emails();
+                $emails->sendFromTemplate('new_user',[
+                    '%client_name%' => $name,
+                    '%client_email%' => $email,
+                    '%client_password%' => $password
+                ], $email);
+            });
         }
         return $client_id;
     }

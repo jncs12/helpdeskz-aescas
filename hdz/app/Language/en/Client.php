@@ -59,6 +59,7 @@ return [
         'email' => 'E-mail address',
         'password' => 'Password',
         'submit' => 'Submit',
+        'sending' => 'Sending…',
         'captchaVerification' => 'CAPTCHA verification',
         'search' => 'Search',
         'ticketID' => 'Ticket ID',

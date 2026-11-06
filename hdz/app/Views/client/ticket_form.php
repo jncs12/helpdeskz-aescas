@@ -19,7 +19,7 @@ $this->section('content');
             echo '<div class="alert alert-danger">'.$error_msg.'</div>';
         }
 
-        echo form_open_multipart('',[],[
+        echo form_open_multipart('',['data-submit-once' => lang('Client.form.sending')],[
             'do' => 'submit'
         ]);
         ?>

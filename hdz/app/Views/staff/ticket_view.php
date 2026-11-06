@@ -121,7 +121,7 @@ $this->section('content');
                 </div>
                 <div class="tab-pane fade" id="replyBox" role="tabpanel" aria-labelledby="reply-tab">
                     <?php
-                    echo form_open_multipart('',[],['do'=>'reply']);
+                    echo form_open_multipart('',['data-submit-once' => lang('Admin.form.sending')],['do'=>'reply']);
                     ?>
                     <div class="form-group row">
                         <label class="col-form-label col-lg-2"><?php echo lang('Admin.form.to');?></label>
